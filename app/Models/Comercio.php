@@ -54,6 +54,6 @@ class Comercio extends Authenticatable
 
     public function scopeActivo($query)
     {
-        return $query->where('activo', true);
+        return $query->where('comercios.activo', true);
     }
 }

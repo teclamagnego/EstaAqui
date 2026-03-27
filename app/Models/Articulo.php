@@ -23,6 +23,7 @@ class Articulo extends Model
         return [
             'precio_ars' => 'decimal:2',
             'activo' => 'boolean',
+            'orden' => 'integer',
         ];
     }
 
@@ -33,7 +34,7 @@ class Articulo extends Model
 
     public function scopeActivo($query)
     {
-        return $query->where('activo', true);
+        return $query->where('articulos.activo', true);
     }
 
     public function getWhatsappLinkAttribute(): string

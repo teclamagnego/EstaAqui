@@ -23,20 +23,20 @@ class ApiController extends Controller
         if ($search = $request->input('q')) {
             $term = '%' . $search . '%';
             $query->where(function ($q) use ($term) {
-                $q->where('nombre_producto', 'like', $term)
-                  ->orWhere('descripcion_articulo', 'like', $term)
-                  ->orWhere('categoria', 'like', $term);
+                $q->where('articulos.nombre_producto', 'like', $term)
+                  ->orWhere('articulos.descripcion_articulo', 'like', $term)
+                  ->orWhere('articulos.categoria', 'like', $term);
             });
         }
 
         // Filtro por categoría
         if ($categoria = $request->input('categoria')) {
-            $query->where('categoria', $categoria);
+            $query->where('articulos.categoria', '=', $categoria);
         }
 
         // Filtro por comercio
         if ($comercioId = $request->input('comercio')) {
-            $query->where('comercio_id', $comercioId);
+            $query->where('articulos.comercio_id', '=', $comercioId);
         }
 
         $articulos = $query->join('comercios', 'articulos.comercio_id', '=', 'comercios.id')

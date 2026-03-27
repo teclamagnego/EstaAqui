@@ -390,8 +390,11 @@
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-white/50 mb-1.5">URL de imagen</label>
-                            <input type="url" x-model="articuloForm.imagen_url" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/25" placeholder="https://...">
+                            <label class="block text-xs font-medium text-white/50 mb-1.5">Foto del producto (opcional)</label>
+                            <input type="file" accept="image/*" @change="articuloForm.imagen_file = $event.target.files[0]" x-ref="imagenInput" class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/25">
+                            <template x-if="editingArticulo && editingArticulo.imagen_url">
+                                <img :src="editingArticulo.imagen_url" class="mt-2 h-16 rounded-xl object-cover">
+                            </template>
                         </div>
                         <div class="flex gap-3">
                             <button type="button" @click="showArticuloForm = false" class="flex-1 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm font-medium text-white/60 hover:bg-white/10 transition">Cancelar</button>
@@ -476,7 +479,7 @@
             misArticulos: [],
             showArticuloForm: false,
             editingArticulo: null,
-            articuloForm: { nombre_producto: '', descripcion_articulo: '', precio_ars: '', categoria: '', imagen_url: '' },
+            articuloForm: { nombre_producto: '', descripcion_articulo: '', precio_ars: '', categoria: '', imagen_url: '', imagen_file: null },
 
             // CSRF
             get csrfToken() {
@@ -503,6 +506,9 @@
                     },
                     credentials: 'same-origin',
                 };
+                if (options.body instanceof FormData) {
+                    delete defaults.headers['Content-Type'];
+                }
                 const res = await fetch(url, { ...defaults, ...options });
                 if (!res.ok) {
                     const err = await res.json().catch(() => ({}));
@@ -654,7 +660,8 @@
             },
 
             resetArticuloForm() {
-                this.articuloForm = { nombre_producto: '', descripcion_articulo: '', precio_ars: '', categoria: '', imagen_url: '' };
+                this.articuloForm = { nombre_producto: '', descripcion_articulo: '', precio_ars: '', categoria: '', imagen_url: '', imagen_file: null };
+                if (this.$refs.imagenInput) this.$refs.imagenInput.value = '';
             },
 
             editArticulo(art) {
@@ -665,21 +672,32 @@
                     precio_ars: art.precio_ars,
                     categoria: art.categoria,
                     imagen_url: art.imagen_url || '',
+                    imagen_file: null,
                 };
+                if (this.$refs.imagenInput) this.$refs.imagenInput.value = '';
                 this.showArticuloForm = true;
             },
 
             async saveArticulo() {
                 try {
+                    const formData = new FormData();
+                    formData.append('nombre_producto', this.articuloForm.nombre_producto);
+                    if (this.articuloForm.descripcion_articulo) formData.append('descripcion_articulo', this.articuloForm.descripcion_articulo);
+                    formData.append('precio_ars', this.articuloForm.precio_ars);
+                    formData.append('categoria', this.articuloForm.categoria);
+                    if (this.articuloForm.imagen_url) formData.append('imagen_url', this.articuloForm.imagen_url);
+                    if (this.articuloForm.imagen_file) formData.append('imagen_file', this.articuloForm.imagen_file);
+
                     if (this.editingArticulo) {
+                        formData.append('_method', 'PUT');
                         await this.apiFetch(`/api/comercio/articulos/${this.editingArticulo.id}`, {
-                            method: 'PUT',
-                            body: JSON.stringify(this.articuloForm),
+                            method: 'POST',
+                            body: formData,
                         });
                     } else {
                         await this.apiFetch('/api/comercio/articulos', {
                             method: 'POST',
-                            body: JSON.stringify(this.articuloForm),
+                            body: formData,
                         });
                     }
                     this.showArticuloForm = false;

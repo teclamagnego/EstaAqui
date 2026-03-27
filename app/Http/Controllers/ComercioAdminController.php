@@ -31,9 +31,18 @@ class ComercioAdminController extends Controller
             'precio_ars' => 'required|numeric|min:0',
             'categoria' => 'required|string|max:255',
             'imagen_url' => 'nullable|url|max:500',
+            'imagen_file' => 'nullable|image|max:10240',
         ]);
 
         $comercio = Auth::guard('comercio')->user();
+
+        if ($request->hasFile('imagen_file')) {
+            $file = $request->file('imagen_file');
+            $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $file->getClientOriginalName());
+            $file->storeAs("fotos/{$comercio->id}", $filename, 'local');
+            $validated['imagen_url'] = url("fotos/{$comercio->id}/{$filename}");
+        }
+
         $articulo = $comercio->articulos()->create($validated);
 
         return response()->json($articulo, 201);
@@ -53,8 +62,16 @@ class ComercioAdminController extends Controller
             'precio_ars' => 'sometimes|required|numeric|min:0',
             'categoria' => 'sometimes|required|string|max:255',
             'imagen_url' => 'nullable|url|max:500',
+            'imagen_file' => 'nullable|image|max:10240',
             'activo' => 'sometimes|boolean',
         ]);
+
+        if ($request->hasFile('imagen_file')) {
+            $file = $request->file('imagen_file');
+            $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $file->getClientOriginalName());
+            $file->storeAs("fotos/{$comercio->id}", $filename, 'local');
+            $validated['imagen_url'] = url("fotos/{$comercio->id}/{$filename}");
+        }
 
         $articulo->update($validated);
 

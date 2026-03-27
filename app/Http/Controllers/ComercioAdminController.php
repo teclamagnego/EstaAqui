@@ -6,6 +6,7 @@ use App\Models\Articulo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class ComercioAdminController extends Controller
 {
@@ -15,7 +16,7 @@ class ComercioAdminController extends Controller
     public function index(): JsonResponse
     {
         $comercio = Auth::guard('comercio')->user();
-        $articulos = $comercio->articulos()->orderBy('orden', 'asc')->get();
+        $articulos = $comercio->articulos()->with('imagenes')->orderBy('orden', 'asc')->get();
 
         return response()->json($articulos);
     }
@@ -32,6 +33,8 @@ class ComercioAdminController extends Controller
             'categoria' => 'required|string|max:255',
             'imagen_url' => 'nullable|url|max:500',
             'imagen_file' => 'nullable|image|max:10240',
+            'imagenes_file' => 'nullable|array',
+            'imagenes_file.*' => 'image|max:10240',
             'orden' => 'nullable|integer',
         ]);
 
@@ -46,7 +49,18 @@ class ComercioAdminController extends Controller
 
         $articulo = $comercio->articulos()->create($validated);
 
-        return response()->json($articulo, 201);
+        if ($request->hasFile('imagenes_file')) {
+            foreach ($request->file('imagenes_file') as $file) {
+                $filename = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
+                $file->storeAs("fotos/{$comercio->id}", $filename, 'public');
+                $articulo->imagenes()->create([
+                    'url' => url("storage/fotos/{$comercio->id}/{$filename}"),
+                    'orden' => 0
+                ]);
+            }
+        }
+
+        return response()->json($articulo->load('imagenes'), 201);
     }
 
     /**
@@ -64,6 +78,8 @@ class ComercioAdminController extends Controller
             'categoria' => 'sometimes|required|string|max:255',
             'imagen_url' => 'nullable|url|max:500',
             'imagen_file' => 'nullable|image|max:10240',
+            'imagenes_file' => 'nullable|array',
+            'imagenes_file.*' => 'image|max:10240',
             'activo' => 'sometimes|boolean',
             'orden' => 'sometimes|integer',
         ]);
@@ -77,7 +93,18 @@ class ComercioAdminController extends Controller
 
         $articulo->update($validated);
 
-        return response()->json($articulo);
+        if ($request->hasFile('imagenes_file')) {
+            foreach ($request->file('imagenes_file') as $file) {
+                $filename = time() . '_' . \Illuminate\Support\Str::random(10) . '.' . $file->getClientOriginalExtension();
+                $file->storeAs("fotos/{$comercio->id}", $filename, 'public');
+                $articulo->imagenes()->create([
+                    'url' => url("storage/fotos/{$comercio->id}/{$filename}"),
+                    'orden' => 0
+                ]);
+            }
+        }
+
+        return response()->json($articulo->load('imagenes'));
     }
 
     /**
@@ -301,5 +328,23 @@ class ComercioAdminController extends Controller
             'articulos' => $articulos_stats,
             'recientes' => $ultimos_clicks,
         ]);
+    }
+
+    /**
+     * Eliminar una imagen secundaria.
+     */
+    public function deleteImagen(int $articuloId, int $imagenId): JsonResponse
+    {
+        $comercio = Auth::guard('comercio')->user();
+        $articulo = $comercio->articulos()->findOrFail($articuloId);
+        $imagen = $articulo->imagenes()->findOrFail($imagenId);
+        
+        // Opcional: eliminar el archivo de storage
+        $path = str_replace(url('storage/'), '', $imagen->url);
+        \Illuminate\Support\Facades\Storage::disk('public')->delete($path);
+
+        $imagen->delete();
+
+        return response()->json(['message' => 'Imagen eliminada']);
     }
 }

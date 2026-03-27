@@ -24,6 +24,7 @@ Route::middleware(ComercioAuth::class)->prefix('comercio')->group(function () {
     Route::post('/articulos', [ComercioAdminController::class, 'store']);
     Route::put('/articulos/{id}', [ComercioAdminController::class, 'update']);
     Route::delete('/articulos/{id}', [ComercioAdminController::class, 'destroy']);
+    Route::delete('/articulos/{articuloId}/imagenes/{imagenId}', [ComercioAdminController::class, 'deleteImagen']);
     Route::put('/perfil', [ComercioAdminController::class, 'updateProfile']);
     
     // Excel Import endpoints

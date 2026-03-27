@@ -177,7 +177,7 @@
             {{-- Product Grid --}}
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4" x-show="!loading">
                 <template x-for="art in filteredArticulos" :key="art.id">
-                    <div class="group bg-white/[0.03] rounded-2xl border border-white/8 overflow-hidden hover:border-primary-500/30 hover:bg-white/[0.06] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary-500/5">
+                    <div @click="openArticuloDetail(art)" class="cursor-pointer group bg-white/[0.03] rounded-2xl border border-white/8 overflow-hidden hover:border-primary-500/30 hover:bg-white/[0.06] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary-500/5">
                         {{-- Image --}}
                         <div class="aspect-square overflow-hidden bg-white/5 relative">
                             <img
@@ -204,7 +204,7 @@
                                 <span class="text-lg font-bold text-white" x-text="'$' + Number(art.precio_ars).toLocaleString('es-AR')"></span>
                                 <a
                                     :href="art.whatsapp_link"
-                                    @click="trackClick('click_whatsapp_articulo', art.comercio_id, art.id)"
+                                    @click.stop="trackClick('click_whatsapp_articulo', art.comercio_id, art.id)"
                                     target="_blank"
                                     rel="noopener"
                                     class="flex items-center gap-1.5 px-3 py-1.5 bg-whatsapp/90 hover:bg-whatsapp rounded-lg text-white text-xs font-semibold transition-all hover:shadow-lg hover:shadow-whatsapp/25 active:scale-95"
@@ -279,7 +279,7 @@
             <h2 class="text-lg font-bold text-white/80 mb-4" x-text="'Productos (' + (tiendaData?.articulos?.length || 0) + ')'"></h2>
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 pb-16">
                 <template x-for="art in (tiendaData?.articulos || [])" :key="art.id">
-                    <div class="group bg-white/[0.03] rounded-2xl border border-white/8 overflow-hidden hover:border-primary-500/30 hover:bg-white/[0.06] transition-all duration-300 hover:-translate-y-0.5">
+                    <div @click="openArticuloDetail(art)" class="cursor-pointer group bg-white/[0.03] rounded-2xl border border-white/8 overflow-hidden hover:border-primary-500/30 hover:bg-white/[0.06] transition-all duration-300 hover:-translate-y-0.5">
                         <div class="aspect-square overflow-hidden bg-white/5">
                             <img :src="art.imagen_url" :alt="art.nombre_producto" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
                         </div>
@@ -289,7 +289,7 @@
                             <p class="text-[11px] text-white/35 line-clamp-2 mb-3" x-text="art.descripcion_articulo"></p>
                             <div class="flex items-end justify-between gap-2">
                                 <span class="text-lg font-bold text-white" x-text="'$' + Number(art.precio_ars).toLocaleString('es-AR')"></span>
-                                <a :href="art.whatsapp_link" @click="trackClick('click_whatsapp_articulo', tiendaData?.comercio?.id, art.id)" target="_blank" rel="noopener" class="flex items-center gap-1.5 px-3 py-1.5 bg-whatsapp/90 hover:bg-whatsapp rounded-lg text-white text-xs font-semibold transition-all hover:shadow-lg hover:shadow-whatsapp/25 active:scale-95">
+                                <a :href="art.whatsapp_link" @click.stop="trackClick('click_whatsapp_articulo', tiendaData?.comercio?.id, art.id)" target="_blank" rel="noopener" class="flex items-center gap-1.5 px-3 py-1.5 bg-whatsapp/90 hover:bg-whatsapp rounded-lg text-white text-xs font-semibold transition-all hover:shadow-lg hover:shadow-whatsapp/25 active:scale-95">
                                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.09.534 4.058 1.474 5.771L.058 23.7l6.064-1.393A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.785c-1.89 0-3.64-.525-5.146-1.435l-.368-.22-3.81.875.908-3.716-.24-.383A9.77 9.77 0 012.215 12c0-5.397 4.388-9.785 9.785-9.785S21.785 6.603 21.785 12 17.397 21.785 12 21.785z"/></svg>
                                     Stock
                                 </a>
@@ -472,6 +472,37 @@
                             <template x-if="editingArticulo && editingArticulo.imagen_url && !articuloForm.imagen_file">
                                 <img :src="editingArticulo.imagen_url" class="mt-2 h-16 rounded-xl object-cover border border-white/10">
                             </template>
+                        </div>
+
+                        {{-- Carousel Images --}}
+                        <div class="pt-2 border-t border-white/5">
+                            <label class="block text-xs font-medium text-white/50 mb-3 uppercase tracking-wider">Fotos adicionales (Carrusel)</label>
+                            
+                            {{-- Existing images preview --}}
+                            <template x-if="editingArticulo && editingArticulo.imagenes && editingArticulo.imagenes.length > 0">
+                                <div class="grid grid-cols-4 gap-2 mb-4">
+                                    <template x-for="img in editingArticulo.imagenes" :key="img.id">
+                                        <div class="relative group aspect-square rounded-xl overflow-hidden border border-white/10" x-show="!articuloForm.deletedImagenes.includes(img.id)">
+                                            <img :src="img.url" class="w-full h-full object-cover">
+                                            <button type="button" @click="articuloForm.deletedImagenes.push(img.id)" class="absolute inset-0 bg-red-600/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                            </button>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+
+                            {{-- New images selection --}}
+                            <div class="flex flex-col gap-2">
+                                <button type="button" @click="$refs.imagenesInput.click()" class="w-full py-3 bg-white/5 border border-dashed border-white/20 rounded-xl text-xs font-medium text-white/40 hover:text-white/60 hover:bg-white/10 transition flex items-center justify-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                    Agregar más fotos al carrusel
+                                </button>
+                                <input type="file" accept="image/*" multiple @change="articuloForm.imagenes_file = $event.target.files" x-ref="imagenesInput" class="hidden">
+                                <div x-show="articuloForm.imagenes_file.length > 0" class="flex flex-wrap gap-1 p-2 bg-primary-500/5 rounded-xl border border-primary-500/10">
+                                    <span class="text-[10px] text-primary-400 font-bold" x-text="articuloForm.imagenes_file.length + ' fotos nuevas seleccionadas'"></span>
+                                </div>
+                            </div>
                         </div>
                         <div class="flex gap-3 pt-2">
                             <button type="button" @click="showArticuloForm = false" class="flex-1 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm font-medium text-white/60 hover:bg-white/10 transition">Cancelar</button>
@@ -760,16 +791,98 @@
     {{-- ═══════════════════════════════════════════════════════════════════
          FOOTER
     ═══════════════════════════════════════════════════════════════════ --}}
-    <footer class="border-t border-white/5 mt-auto" x-show="view === 'home'">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 text-center">
-            <div class="flex items-center justify-center gap-2 mb-2">
-                <span class="text-lg">📍</span>
-                <span class="text-sm font-bold bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">EstaAqui</span>
-            </div>
-            <p class="text-xs text-white/25">Catálogo unificado de comercios locales · Comprá cerca, comprá local</p>
-            <a href="#" @click.prevent="goToSuperAdmin()" class="inline-block mt-4 text-[11px] text-white/20 hover:text-white/50 transition underline decoration-white/20 underline-offset-2">🛡️ Panel General Administrador</a>
-        </div>
     </footer>
+
+    {{-- ═══════════════════════════════════════════════════════════════════
+         ARTICLE DETAIL MODAL
+    ═══════════════════════════════════════════════════════════════════ --}}
+    <div x-show="showArticuloDetail" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+         @keydown.escape.window="showArticuloDetail = false"
+         x-cloak>
+        <div class="bg-surface-900 w-full max-w-4xl max-h-[90vh] rounded-3xl overflow-hidden border border-white/10 shadow-2xl flex flex-col md:flex-row relative" @click.away="showArticuloDetail = false">
+            {{-- Close Button --}}
+            <button @click="showArticuloDetail = false" class="absolute top-4 right-4 z-10 w-10 h-10 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all border border-white/10">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+
+            {{-- Image / Carousel --}}
+            <div class="w-full md:w-1/2 bg-black flex items-center justify-center relative aspect-square md:aspect-auto">
+                {{-- Carousel Main --}}
+                <template x-if="currentSlides.length > 0">
+                    <div class="w-full h-full">
+                        <template x-for="(src, index) in currentSlides" :key="index">
+                            <div x-show="currentSlide === index" 
+                                 x-transition:enter="transition ease-out duration-500"
+                                 x-transition:enter-start="opacity-0 scale-95"
+                                 x-transition:enter-end="opacity-100 scale-100"
+                                 class="absolute inset-0">
+                                <img :src="src" class="w-full h-full object-contain">
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+                {{-- Carousel Controls --}}
+                <template x-if="currentSlides.length > 1">
+                    <div class="absolute inset-0 flex items-center justify-between px-4">
+                        <button @click="prevSlide()" class="w-10 h-10 bg-black/20 hover:bg-black/40 rounded-full flex items-center justify-center text-white backdrop-blur-sm border border-white/5 transition">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                        </button>
+                        <button @click="nextSlide()" class="w-10 h-10 bg-black/20 hover:bg-black/40 rounded-full flex items-center justify-center text-white backdrop-blur-sm border border-white/5 transition">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </button>
+                    </div>
+                </template>
+
+                {{-- Carousel Indicators --}}
+                <template x-if="currentSlides.length > 1">
+                    <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5">
+                        <template x-for="(src, index) in currentSlides" :key="index">
+                            <div class="h-1.5 rounded-full transition-all duration-300" :class="currentSlide === index ? 'w-6 bg-primary-500' : 'w-1.5 bg-white/30'"></div>
+                        </template>
+                    </div>
+                </template>
+            </div>
+
+            {{-- Info --}}
+            <div class="w-full md:w-1/2 p-6 sm:p-8 flex flex-col justify-between overflow-y-auto">
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="px-2.5 py-1 bg-primary-500/10 text-primary-400 text-[10px] font-bold rounded-lg border border-primary-500/20 tracking-wider uppercase" x-text="articuloSeleccionado?.categoria"></span>
+                        <template x-if="articuloSeleccionado?.comercio">
+                            <span class="text-[10px] text-white/40 flex items-center gap-1">
+                                🏪 <span x-text="articuloSeleccionado.comercio.nombre"></span>
+                            </span>
+                        </template>
+                    </div>
+                    <h2 class="text-2xl font-black text-white/90 leading-tight mb-4" x-text="articuloSeleccionado?.nombre_producto"></h2>
+                    <p class="text-white/60 text-sm leading-relaxed mb-6 whitespace-pre-wrap" x-text="articuloSeleccionado?.descripcion_articulo || 'Sin descripción disponible.'"></p>
+                    
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="text-3xl font-black text-white" x-text="'$' + Number(articuloSeleccionado?.precio_ars || 0).toLocaleString('es-AR')"></div>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <a :href="articuloSeleccionado?.whatsapp_link" 
+                       @click="trackClick('click_whatsapp_articulo', articuloSeleccionado?.comercio_id, articuloSeleccionado?.id)"
+                       target="_blank"
+                       class="w-full flex items-center justify-center gap-3 py-4 bg-whatsapp hover:bg-whatsapp/90 text-white rounded-2xl font-black transition-all shadow-xl shadow-whatsapp/20 active:scale-[0.98]">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.09.534 4.058 1.474 5.771L.058 23.7l6.064-1.393A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.785c-1.89 0-3.64-.525-5.146-1.435l-.368-.22-3.81.875.908-3.716-.24-.383A9.77 9.77 0 012.215 12c0-5.397 4.388-9.785 9.785-9.785S21.785 6.603 21.785 12 17.397 21.785 12 21.785z"/></svg>
+                        CONSULTAR POR WHATSAPP
+                    </a>
+                    <button @click="showArticuloDetail = false" class="text-xs text-white/30 hover:text-white/50 w-full pt-2 transition">Seguir viendo más productos</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     {{-- ═══════════════════════════════════════════════════════════════════
          ALPINE.JS APP
@@ -790,6 +903,11 @@
             hasMore: false,
             fuseInstance: null,
             theme: localStorage.getItem('theme') || 'dark',
+
+            // UI State
+            articuloSeleccionado: null,
+            showArticuloDetail: false,
+            currentSlide: 0,
 
             toggleTheme() {
                 this.theme = (this.theme === 'dark') ? 'light' : 'dark';
@@ -821,7 +939,17 @@
             showArticuloForm: false,
             importingExcel: false,
             editingArticulo: null,
-            articuloForm: { nombre_producto: '', descripcion_articulo: '', precio_ars: '', categoria: '', imagen_url: '', imagen_file: null, orden: 0 },
+            articuloForm: { 
+                nombre_producto: '', 
+                descripcion_articulo: '', 
+                precio_ars: '', 
+                categoria: '', 
+                imagen_url: '', 
+                imagen_file: null, 
+                imagenes_file: [], 
+                deletedImagenes: [],
+                orden: 0 
+            },
             perfilForm: { nombre: '', descripcion: '', whatsapp: '', zona_barrio: '', direccion: '', logo_url: '', logo_file: null },
 
             // Super Admin
@@ -954,6 +1082,30 @@
                 this.loading = false;
             },
 
+            openArticuloDetail(art) {
+                this.articuloSeleccionado = art;
+                this.showArticuloDetail = true;
+                this.currentSlide = 0;
+            },
+
+            get currentSlides() {
+                if (!this.articuloSeleccionado) return [];
+                const slides = [];
+                if (this.articuloSeleccionado.imagen_url) slides.push(this.articuloSeleccionado.imagen_url);
+                if (this.articuloSeleccionado.imagenes) {
+                    this.articuloSeleccionado.imagenes.forEach(img => slides.push(img.url));
+                }
+                return slides;
+            },
+
+            nextSlide() {
+                this.currentSlide = (this.currentSlide + 1) % this.currentSlides.length;
+            },
+
+            prevSlide() {
+                this.currentSlide = (this.currentSlide - 1 + this.currentSlides.length) % this.currentSlides.length;
+            },
+
             async trackClick(tipo, comercioId, articuloId = null) {
                 if (!comercioId) return;
                 try {
@@ -1029,8 +1181,20 @@
             },
 
             resetArticuloForm() {
-                this.articuloForm = { nombre_producto: '', descripcion_articulo: '', precio_ars: '', categoria: '', imagen_url: '', imagen_file: null, orden: 0 };
+                this.articuloForm = { 
+                    nombre_producto: '', 
+                    descripcion_articulo: '', 
+                    precio_ars: '', 
+                    categoria: '', 
+                    imagen_url: '', 
+                    imagen_file: null, 
+                    imagenes_file: [], 
+                    deletedImagenes: [],
+                    orden: 0 
+                };
                 if (this.$refs.imagenInput) this.$refs.imagenInput.value = '';
+                if (this.$refs.imagenesInput) this.$refs.imagenesInput.value = '';
+                if (this.$refs.imagenInputCamera) this.$refs.imagenInputCamera.value = '';
             },
 
             editArticulo(art) {
@@ -1042,6 +1206,8 @@
                     categoria: art.categoria,
                     imagen_url: art.imagen_url || '',
                     imagen_file: null,
+                    imagenes_file: [],
+                    deletedImagenes: [],
                     orden: art.orden || 0,
                 };
                 if (this.$refs.imagenInput) this.$refs.imagenInput.value = '';
@@ -1099,6 +1265,20 @@
                     formData.append('orden', this.articuloForm.orden || 0);
                     if (this.articuloForm.imagen_url) formData.append('imagen_url', this.articuloForm.imagen_url);
                     if (this.articuloForm.imagen_file) formData.append('imagen_file', this.articuloForm.imagen_file);
+                    
+                    if (this.articuloForm.imagenes_file && this.articuloForm.imagenes_file.length) {
+                        for (let i = 0; i < this.articuloForm.imagenes_file.length; i++) {
+                            formData.append('imagenes_file[]', this.articuloForm.imagenes_file[i]);
+                        }
+                    }
+
+                    if (this.editingArticulo && this.articuloForm.deletedImagenes.length) {
+                        for (let id of this.articuloForm.deletedImagenes) {
+                            await this.apiFetch(`/api/comercio/articulos/${this.editingArticulo.id}/imagenes/${id}`, {
+                                method: 'DELETE'
+                            });
+                        }
+                    }
 
                     if (this.editingArticulo) {
                         formData.append('_method', 'PUT');

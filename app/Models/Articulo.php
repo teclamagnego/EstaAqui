@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Articulo extends Model
 {
@@ -30,6 +31,11 @@ class Articulo extends Model
     public function comercio(): BelongsTo
     {
         return $this->belongsTo(Comercio::class);
+    }
+
+    public function imagenes(): HasMany
+    {
+        return $this->hasMany(ArticuloImagen::class)->orderBy('orden', 'asc');
     }
 
     public function scopeActivo($query)

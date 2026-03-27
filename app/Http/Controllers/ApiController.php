@@ -15,7 +15,7 @@ class ApiController extends Controller
      */
     public function articulos(Request $request): JsonResponse
     {
-        $query = Articulo::with('comercio:id,nombre,slug,whatsapp,zona_barrio,logo_url')
+        $query = Articulo::with(['comercio:id,nombre,slug,whatsapp,zona_barrio,logo_url', 'imagenes'])
             ->activo()
             ->whereHas('comercio', fn($q) => $q->activo());
 
@@ -46,10 +46,7 @@ class ApiController extends Controller
             ->paginate(20);
 
         // Agregar whatsapp_link a cada artículo
-        $articulos->getCollection()->transform(function ($articulo) {
-            $articulo->whatsapp_link = $articulo->whatsapp_link;
-            return $articulo;
-        });
+        $articulos->getCollection()->each(fn($a) => $a->append('whatsapp_link'));
 
         return response()->json($articulos);
     }
@@ -78,13 +75,11 @@ class ApiController extends Controller
             ->firstOrFail();
 
         $articulos = $comercio->articulos()
+            ->with('imagenes')
             ->activo()
             ->orderBy('orden', 'asc')
             ->get()
-            ->map(function ($articulo) {
-                $articulo->whatsapp_link = $articulo->whatsapp_link;
-                return $articulo;
-            });
+            ->each(fn($a) => $a->append('whatsapp_link'));
 
         return response()->json([
             'comercio' => $comercio,

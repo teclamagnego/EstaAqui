@@ -112,8 +112,13 @@
                 <template x-for="com in comercios" :key="com.id">
                     <button @click="goToTienda(com.slug)" class="shrink-0 group">
                         <div class="w-28 sm:w-32 p-3 bg-white/5 rounded-2xl border border-white/8 hover:border-primary-500/30 hover:bg-white/8 transition-all text-center">
-                            <div class="w-12 h-12 mx-auto rounded-xl bg-gradient-to-br from-primary-500/30 to-accent-500/30 flex items-center justify-center text-2xl mb-2">
-                                🏬
+                            <div class="w-12 h-12 mx-auto rounded-xl bg-gradient-to-br from-primary-500/30 to-accent-500/30 flex items-center justify-center text-2xl mb-2 overflow-hidden border border-white/5">
+                                <template x-if="com.logo_url">
+                                    <img :src="com.logo_url" class="w-full h-full object-cover">
+                                </template>
+                                <template x-if="!com.logo_url">
+                                    <span>🏬</span>
+                                </template>
                             </div>
                             <p class="text-xs font-semibold text-white/80 truncate" x-text="com.nombre"></p>
                             <p class="text-[10px] text-white/40 mt-0.5" x-text="com.zona_barrio"></p>
@@ -215,8 +220,13 @@
             {{-- Shop Header --}}
             <div x-show="tiendaData" class="bg-gradient-to-r from-primary-900/30 to-accent-600/10 rounded-2xl border border-white/8 p-6 sm:p-8 mb-8">
                 <div class="flex items-start gap-4 sm:gap-6">
-                    <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-3xl sm:text-4xl shrink-0 shadow-xl shadow-primary-500/20">
-                        🏬
+                    <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-3xl sm:text-4xl shrink-0 shadow-xl shadow-primary-500/20 overflow-hidden border border-white/10">
+                        <template x-if="tiendaData?.comercio?.logo_url">
+                            <img :src="tiendaData.comercio.logo_url" class="w-full h-full object-cover">
+                        </template>
+                        <template x-if="!tiendaData?.comercio?.logo_url">
+                            <span>🏬</span>
+                        </template>
                     </div>
                     <div class="min-w-0">
                         <h1 class="text-2xl sm:text-3xl font-black" x-text="tiendaData?.comercio?.nombre"></h1>
@@ -382,6 +392,9 @@
                 <button @click="adminTab = 'informes'; fetchInformes()" class="pb-3 text-sm font-medium transition-all" :class="adminTab === 'informes' ? 'text-primary-400 border-b-2 border-primary-500' : 'text-white/50 hover:text-white'">
                     📊 Informes
                 </button>
+                <button @click="adminTab = 'perfil'; initPerfilForm()" class="pb-3 text-sm font-medium transition-all" :class="adminTab === 'perfil' ? 'text-primary-400 border-b-2 border-primary-500' : 'text-white/50 hover:text-white'">
+                    👤 Perfil
+                </button>
             </div>
 
             <div x-show="adminTab === 'articulos'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
@@ -419,12 +432,26 @@
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-white/50 mb-1.5">Foto del producto (opcional)</label>
-                            <input type="file" accept="image/*" @change="articuloForm.imagen_file = $event.target.files[0]" x-ref="imagenInput" class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/25">
-                            <template x-if="editingArticulo && editingArticulo.imagen_url">
-                                <img :src="editingArticulo.imagen_url" class="mt-2 h-16 rounded-xl object-cover">
+                            <div class="flex flex-col gap-2">
+                                <div class="flex gap-2">
+                                    <button type="button" @click="$refs.imagenInput.click()" class="flex-1 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-medium hover:bg-white/10 transition flex items-center justify-center gap-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                                        Subir Archivo
+                                    </button>
+                                    <button type="button" @click="$refs.imagenInputCamera.click()" class="flex-1 py-2 bg-primary-500/10 border border-primary-500/20 rounded-xl text-xs font-medium text-primary-300 hover:bg-primary-500/20 transition flex items-center justify-center gap-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                        Tomar Foto
+                                    </button>
+                                </div>
+                                <input type="file" accept="image/*" @change="articuloForm.imagen_file = $event.target.files[0]" x-ref="imagenInput" class="hidden">
+                                <input type="file" accept="image/*" capture="environment" @change="articuloForm.imagen_file = $event.target.files[0]" x-ref="imagenInputCamera" class="hidden">
+                                <p class="text-[10px] text-white/30" x-show="articuloForm.imagen_file" x-text="'Seleccionado: ' + articuloForm.imagen_file?.name"></p>
+                            </div>
+                            <template x-if="editingArticulo && editingArticulo.imagen_url && !articuloForm.imagen_file">
+                                <img :src="editingArticulo.imagen_url" class="mt-2 h-16 rounded-xl object-cover border border-white/10">
                             </template>
                         </div>
-                        <div class="flex gap-3">
+                        <div class="flex gap-3 pt-2">
                             <button type="button" @click="showArticuloForm = false" class="flex-1 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm font-medium text-white/60 hover:bg-white/10 transition">Cancelar</button>
                             <button type="submit" class="flex-1 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl text-sm font-bold transition-all shadow-lg shadow-primary-500/25">Guardar</button>
                         </div>
@@ -534,6 +561,83 @@
                 <div x-show="!informesData" class="py-20 text-center">
                     <div class="w-8 h-8 border-2 border-primary-500/30 border-t-primary-500 rounded-full animate-spin mx-auto mb-4"></div>
                     <p class="text-white/40 text-sm">Cargando informes...</p>
+                </div>
+            </div>
+
+            {{-- Perfil Tab --}}
+            <div x-show="adminTab === 'perfil'" x-cloak x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+                <div class="bg-white/[0.03] border border-white/10 rounded-2xl p-6 sm:p-8">
+                    <h3 class="text-lg font-bold mb-6 flex items-center gap-2">
+                        <span class="p-2 bg-primary-500/20 rounded-lg text-primary-400">👤</span>
+                        Configuración del Comercio
+                    </h3>
+                    
+                    <form @submit.prevent="savePerfil()" class="space-y-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            {{-- Logo Upload --}}
+                            <div class="sm:col-span-2 flex flex-col items-center sm:flex-row gap-6 p-4 bg-white/5 rounded-2xl border border-dashed border-white/10">
+                                <div class="w-24 h-24 rounded-2xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-4xl shrink-0 overflow-hidden shadow-xl shadow-primary-500/10 border border-white/10">
+                                    <template x-if="perfilForm.logo_url && !perfilForm.logo_file">
+                                        <img :src="perfilForm.logo_url" class="w-full h-full object-cover">
+                                    </template>
+                                    <template x-if="perfilForm.logo_file">
+                                        <img :src="URL.createObjectURL(perfilForm.logo_file)" class="w-full h-full object-cover">
+                                    </template>
+                                    <template x-if="!perfilForm.logo_url && !perfilForm.logo_file">
+                                        <span>🏬</span>
+                                    </template>
+                                </div>
+                                <div class="flex-1 text-center sm:text-left">
+                                    <p class="text-sm font-bold text-white/90 mb-1">Logo del Comercio</p>
+                                    <p class="text-xs text-white/40 mb-4">Recomendado: Cuadrado (800x800px). Máximo 10MB.</p>
+                                    <div class="flex flex-wrap justify-center sm:justify-start gap-2">
+                                        <button type="button" @click="$refs.logoInput.click()" class="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-xs font-bold transition flex items-center gap-2">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                                            Seleccionar archivo
+                                        </button>
+                                        <button type="button" @click="$refs.logoInputCamera.click()" class="px-4 py-2 bg-primary-500/20 text-primary-300 hover:bg-primary-500/30 rounded-xl text-xs font-bold transition flex items-center gap-2">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                            Tomar Foto
+                                        </button>
+                                    </div>
+                                    <input type="file" accept="image/*" @change="perfilForm.logo_file = $event.target.files[0]" x-ref="logoInput" class="hidden">
+                                    <input type="file" accept="image/*" capture="environment" @change="perfilForm.logo_file = $event.target.files[0]" x-ref="logoInputCamera" class="hidden">
+                                </div>
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label class="block text-xs font-medium text-white/50 mb-1.5 uppercase tracking-wider">Nombre del Comercio</label>
+                                <input type="text" x-model="perfilForm.nombre" required class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/25 transition-all">
+                            </div>
+                            
+                            <div class="sm:col-span-1">
+                                <label class="block text-xs font-medium text-white/50 mb-1.5 uppercase tracking-wider">WhatsApp (con código de país)</label>
+                                <input type="text" x-model="perfilForm.whatsapp" required class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/25 transition-all" placeholder="Ej: 5491155001234">
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label class="block text-xs font-medium text-white/50 mb-1.5 uppercase tracking-wider">Zona / Barrio</label>
+                                <input type="text" x-model="perfilForm.zona_barrio" required class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/25 transition-all">
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label class="block text-xs font-medium text-white/50 mb-1.5 uppercase tracking-wider">Dirección Exacta (Opcional)</label>
+                                <input type="text" x-model="perfilForm.direccion" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/25 transition-all">
+                            </div>
+
+                            <div class="sm:col-span-2">
+                                <label class="block text-xs font-medium text-white/50 mb-1.5 uppercase tracking-wider">Descripción del Comercio</label>
+                                <textarea x-model="perfilForm.descripcion" rows="4" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/25 transition-all resize-none"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end pt-4">
+                            <button type="submit" :disabled="authLoading" class="px-8 py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 rounded-xl text-sm font-bold transition-all shadow-lg shadow-primary-500/25 disabled:opacity-50">
+                                <span x-show="!authLoading">Guardar Cambios</span>
+                                <span x-show="authLoading">Guardando...</span>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -682,6 +786,7 @@
             importingExcel: false,
             editingArticulo: null,
             articuloForm: { nombre_producto: '', descripcion_articulo: '', precio_ars: '', categoria: '', imagen_url: '', imagen_file: null, orden: 0 },
+            perfilForm: { nombre: '', descripcion: '', whatsapp: '', zona_barrio: '', direccion: '', logo_url: '', logo_file: null },
 
             // Super Admin
             superAdminAuth: null,
@@ -902,7 +1007,48 @@
                     orden: art.orden || 0,
                 };
                 if (this.$refs.imagenInput) this.$refs.imagenInput.value = '';
+                if (this.$refs.imagenInputCamera) this.$refs.imagenInputCamera.value = '';
                 this.showArticuloForm = true;
+            },
+
+            initPerfilForm() {
+                if (!this.comercioAuth) return;
+                this.perfilForm = {
+                    nombre: this.comercioAuth.nombre,
+                    descripcion: this.comercioAuth.descripcion || '',
+                    whatsapp: this.comercioAuth.whatsapp,
+                    zona_barrio: this.comercioAuth.zona_barrio,
+                    direccion: this.comercioAuth.direccion || '',
+                    logo_url: this.comercioAuth.logo_url || '',
+                    logo_file: null
+                };
+            },
+
+            async savePerfil() {
+                this.authLoading = true;
+                try {
+                    const formData = new FormData();
+                    formData.append('_method', 'PUT');
+                    formData.append('nombre', this.perfilForm.nombre);
+                    formData.append('descripcion', this.perfilForm.descripcion);
+                    formData.append('whatsapp', this.perfilForm.whatsapp);
+                    formData.append('zona_barrio', this.perfilForm.zona_barrio);
+                    formData.append('direccion', this.perfilForm.direccion);
+                    if (this.perfilForm.logo_file) {
+                        formData.append('logo_file', this.perfilForm.logo_file);
+                    }
+
+                    const data = await this.apiFetch('/api/comercio/perfil', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    this.comercioAuth = data.comercio;
+                    alert('Perfil actualizado con éxito');
+                } catch (e) {
+                    alert('Error al actualizar perfil: ' + (e.message || 'Verificá los datos'));
+                } finally {
+                    this.authLoading = false;
+                }
             },
 
             async saveArticulo() {

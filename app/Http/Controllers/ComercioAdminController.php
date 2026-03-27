@@ -107,7 +107,15 @@ class ComercioAdminController extends Controller
             'direccion' => 'nullable|string|max:255',
             'categoria_comercio' => 'nullable|string|max:255',
             'logo_url' => 'nullable|url|max:500',
+            'logo_file' => 'nullable|image|max:10240',
         ]);
+
+        if ($request->hasFile('logo_file')) {
+            $file = $request->file('logo_file');
+            $filename = 'logo_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->storeAs("fotos/{$comercio->id}", $filename, 'local');
+            $validated['logo_url'] = url("fotos/{$comercio->id}/{$filename}");
+        }
 
         $comercio->update($validated);
 

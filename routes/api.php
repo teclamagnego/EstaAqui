@@ -54,4 +54,7 @@ Route::middleware(AdminAuth::class)->prefix('admin')->group(function () {
     Route::post('/comercios/{id}/update-orden', [AdminController::class, 'updateOrden']);
     Route::get('/comercios/{id}/informes', [AdminController::class, 'comercioInformes']);
     Route::get('/comercios/{id}/articulos', [AdminController::class, 'comercioArticulos']);
+    Route::get('/settings', [AdminController::class, 'getSettings']);
+    Route::post('/settings', [AdminController::class, 'updateSettings']);
+    Route::post('/settings/icon', [AdminController::class, 'updateIcon']);
 });

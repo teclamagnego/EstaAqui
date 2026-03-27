@@ -22,6 +22,13 @@
             }
         })();
     </script>
+    
+    {{-- PWA Tags --}}
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="EstaAqui">
 </head>
 <body class="min-h-screen font-sans antialiased transition-colors duration-500" :class="theme" x-data="app()" x-cloak>
 
@@ -57,6 +64,14 @@
             </div>
 
             <div class="flex items-center gap-3 shrink-0">
+                {{-- PWA Install Button --}}
+                <template x-if="deferredPrompt">
+                    <button @click="installPWA()" class="flex items-center gap-1.5 px-3 py-1.5 bg-primary-500/10 hover:bg-primary-500/20 text-primary-400 text-[10px] font-bold rounded-xl border border-primary-500/20 transition-all animate-pulse">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0L8 8m4-4v12"/></svg>
+                        Instalar App
+                    </button>
+                </template>
+
                 {{-- Theme Switcher ALWAYS visible --}}
                 <div class="flex items-center">
                     <button @click="toggleTheme()" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-surface-100/30 border border-surface-200/10 hover:bg-surface-200/20 transition-all flex items-center justify-center gap-2 group" title="Modo Claro/Oscuro">
@@ -506,7 +521,10 @@
                         </div>
                         <div class="flex gap-3 pt-2">
                             <button type="button" @click="showArticuloForm = false" class="flex-1 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm font-medium text-white/60 hover:bg-white/10 transition">Cancelar</button>
-                            <button type="submit" class="flex-1 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl text-sm font-bold transition-all shadow-lg shadow-primary-500/25">Guardar</button>
+                            <button type="submit" :disabled="articuloLoading" class="flex-1 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl text-sm font-bold transition-all shadow-lg shadow-primary-500/25 disabled:opacity-50">
+                                <span x-show="!articuloLoading">Guardar</span>
+                                <span x-show="articuloLoading">Guardando...</span>
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -739,7 +757,11 @@
                 </button>
             </div>
 
-            <div class="bg-surface-900/50 rounded-2xl border border-white/5 overflow-hidden">
+            <div class="bg-surface-900/50 rounded-2xl border border-white/5 overflow-hidden mb-12">
+                <div class="p-6 border-b border-white/5 flex items-center justify-between">
+                    <h2 class="text-sm font-bold text-white/60 uppercase tracking-widest">Listado de Comercios</h2>
+                    <span class="text-xs text-white/30" x-text="superAdminComercios.length + ' comercios registrados'"></span>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead class="bg-white/[0.03] text-white/50">
@@ -785,6 +807,43 @@
                     </table>
                 </div>
             </div>
+
+            {{-- App Configuration Section --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-surface-900 border border-white/10 rounded-2xl p-6 shadow-xl">
+                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        📱 Configuración App (PWA)
+                    </h2>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-xs font-medium text-white/50 mb-3 uppercase">Nombre de la Aplicación</label>
+                            <div class="flex gap-2">
+                                <input type="text" x-model="appSettings.app_name" class="flex-1 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-primary-500/50">
+                                <button @click="saveSettings()" :disabled="authLoading" class="px-4 py-2 bg-primary-500/10 border border-primary-500/20 text-primary-400 hover:bg-primary-500/20 text-xs font-bold rounded-xl transition disabled:opacity-50">
+                                    Guardar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="pt-4 border-t border-white/5">
+                            <label class="block text-xs font-medium text-white/50 mb-3 uppercase">Icono de la Aplicación</label>
+                            <div class="flex items-center gap-6 p-4 bg-white/5 rounded-xl border border-white/5">
+                                <div class="w-20 h-20 bg-black rounded-2xl overflow-hidden border border-white/10 shrink-0">
+                                    <img :src="appSettings.app_icon || '/icon-192.png'" class="w-full h-full object-cover">
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-[11px] text-white/40 mb-3">Subí una imagen cuadrada (512x512px recomendado) para usar como icono del celular.</p>
+                                    <input type="file" @change="updateAppIcon($event)" accept="image/*" class="hidden" x-ref="appIconInput">
+                                    <button @click="$refs.appIconInput.click()" :disabled="authLoading" class="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-xs font-bold rounded-lg transition disabled:opacity-50">
+                                        Cambiar Icono
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
         </div>
     </main>
 
@@ -957,6 +1016,11 @@
             superAdminComercios: [],
             superAdminLoginData: { email: '', password: '' },
             superAdminError: '',
+            articuloLoading: false,
+            
+            // PWA
+            appSettings: { app_icon: '', app_name: 'EstaAqui' },
+            deferredPrompt: null,
 
             // CSRF
             get csrfToken() {
@@ -974,6 +1038,16 @@
                 this.fetchCategorias();
                 this.fetchComercios();
                 this.fetchArticulos();
+                this.fetchSettings();
+
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    this.deferredPrompt = e;
+                });
+                
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('/sw.js');
+                }
             },
 
             // ─── API Helpers ──────────────────────────────────
@@ -1256,6 +1330,8 @@
             },
 
             async saveArticulo() {
+                if (this.articuloLoading) return;
+                this.articuloLoading = true;
                 try {
                     const formData = new FormData();
                     formData.append('nombre_producto', this.articuloForm.nombre_producto);
@@ -1296,6 +1372,8 @@
                     this.fetchMisArticulos();
                 } catch (e) {
                     alert('Error al guardar: ' + (e.message || 'Verificá los datos'));
+                } finally {
+                    this.articuloLoading = false;
                 }
             },
 
@@ -1372,6 +1450,18 @@
                 } catch (e) {
                     this.superAdminError = e.errors?.email?.[0] || 'Credenciales incorrectas';
                 }
+                this.authLoading = false;
+            },
+
+            async saveSettings() {
+                this.authLoading = true;
+                try {
+                    await this.apiFetch('/api/admin/settings', {
+                        method: 'POST',
+                        body: JSON.stringify({ app_name: this.appSettings.app_name })
+                    });
+                    alert('Configuración guardada');
+                } catch (e) { alert('Error al guardar configuración'); }
                 this.authLoading = false;
             },
 

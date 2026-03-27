@@ -17,6 +17,34 @@ Route::get('/fotos/{idcomercio}/{filename}', function ($idcomercio, $filename) {
     return response()->file(storage_path("app/{$path}"));
 });
 
+Route::get('/manifest.json', function () {
+    $icon = \App\Models\Setting::get('app_icon', '/icon-192.png');
+    $name = \App\Models\Setting::get('app_name', 'EstaAqui');
+    
+    return response()->json([
+        "name" => $name,
+        "short_name" => $name,
+        "start_url" => "/",
+        "display" => "standalone",
+        "background_color" => "#0a0a0a",
+        "theme_color" => "#ff3d00",
+        "icons" => [
+            [
+                "src" => $icon,
+                "sizes" => "192x192",
+                "type" => "image/png",
+                "purpose" => "any maskable"
+            ],
+            [
+                "src" => $icon,
+                "sizes" => "512x512",
+                "type" => "image/png",
+                "purpose" => "any maskable"
+            ]
+        ]
+    ]);
+});
+
 Route::get('/{any?}', function () {
     return view('spa');
 })->where('any', '.*');

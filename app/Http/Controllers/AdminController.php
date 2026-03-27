@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use App\Models\Setting;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -160,5 +162,46 @@ class AdminController extends Controller
         $comercio = Comercio::findOrFail($id);
         $articulos = $comercio->articulos()->orderBy('orden', 'asc')->get();
         return response()->json($articulos);
+    }
+
+    public function getSettings(): JsonResponse
+    {
+        return response()->json([
+            'app_icon' => Setting::get('app_icon', '/icon.png'),
+            'app_name' => Setting::get('app_name', 'EstaAqui'),
+        ]);
+    }
+
+    public function updateIcon(Request $request): JsonResponse
+    {
+        $request->validate([
+            'icon' => 'required|image|max:5120',
+        ]);
+
+        if ($request->hasFile('icon')) {
+            $file = $request->file('icon');
+            $filename = 'app_icon_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('public', $filename);
+            $url = url('storage/' . $filename);
+            
+            Setting::set('app_icon', $url);
+            
+            return response()->json(['url' => $url]);
+        }
+
+        return response()->json(['message' => 'No file uploaded'], 400);
+    }
+
+    public function updateSettings(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'app_name' => 'nullable|string|max:50',
+        ]);
+
+        if (isset($validated['app_name'])) {
+            Setting::set('app_name', $validated['app_name']);
+        }
+        
+        return response()->json(['message' => 'Configuración actualizada']);
     }
 }

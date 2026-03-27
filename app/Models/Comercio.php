@@ -18,6 +18,7 @@ class Comercio extends Authenticatable
         'direccion',
         'categoria_comercio',
         'email',
+        'password',
         'imagen_url',
         'activo',
         'orden',

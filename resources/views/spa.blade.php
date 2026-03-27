@@ -11,8 +11,19 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script>
+        // Inline script to prevent theme flash
+        (function() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            if (theme === 'light') {
+                document.documentElement.classList.add('light');
+            } else {
+                document.documentElement.classList.remove('light');
+            }
+        })();
+    </script>
 </head>
-<body class="bg-surface-950 text-white min-h-screen font-sans antialiased" x-data="app()" x-cloak>
+<body class="min-h-screen font-sans antialiased transition-colors duration-500" :class="theme" x-data="app()" x-cloak>
 
     {{-- ═══════════════════════════════════════════════════════════════════
          NAVBAR
@@ -45,17 +56,28 @@
                 </div>
             </div>
 
-            {{-- Navigation Buttons --}}
-            <div class="flex items-center gap-2 shrink-0">
+            <div class="flex items-center gap-3 shrink-0">
+                {{-- Theme Switcher ALWAYS visible --}}
+                <div class="flex items-center">
+                    <button @click="toggleTheme()" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-surface-100/30 border border-surface-200/10 hover:bg-surface-200/20 transition-all flex items-center justify-center gap-2 group" title="Modo Claro/Oscuro">
+                        <span x-show="theme === 'light'" class="text-sm">☀️</span>
+                        <span x-show="theme === 'dark'" class="text-sm">🌙</span>
+                        <span class="text-[10px] font-bold hidden sm:block pointer-events-none" x-text="theme === 'dark' ? 'OSCURO' : 'CLARO'"></span>
+                    </button>
+                </div>
+
+                {{-- Non-auth actions --}}
                 <template x-if="!comercioAuth">
                     <button @click="view = 'login'" class="text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all font-medium text-white/70 hover:text-white">
-                        🏪 Mi Comercio
+                        Mi Comercio
                     </button>
                 </template>
+
+                {{-- Auth actions --}}
                 <template x-if="comercioAuth">
                     <div class="flex items-center gap-2">
                         <button @click="view = 'admin'" class="text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-xl bg-primary-500/20 border border-primary-500/30 hover:bg-primary-500/30 transition-all font-medium text-primary-300">
-                            📋 Panel
+                            Panel
                         </button>
                         <button @click="logoutComercio()" class="text-xs sm:text-sm px-3 py-2 rounded-xl bg-white/5 hover:bg-red-500/20 transition-all text-white/50 hover:text-red-300">
                             Salir
@@ -767,6 +789,20 @@
             currentPage: 1,
             hasMore: false,
             fuseInstance: null,
+            theme: localStorage.getItem('theme') || 'dark',
+
+            toggleTheme() {
+                this.theme = (this.theme === 'dark') ? 'light' : 'dark';
+                localStorage.setItem('theme', this.theme);
+            },
+
+            applyTheme() {
+                if (this.theme === 'light') {
+                    document.documentElement.classList.add('light');
+                } else {
+                    document.documentElement.classList.remove('light');
+                }
+            },
 
             // Tienda
             tiendaData: null,
@@ -801,13 +837,15 @@
 
             // ─── Init ─────────────────────────────────────────
             async init() {
-                await Promise.all([
-                    this.fetchCategorias(),
-                    this.fetchComercios(),
-                    this.fetchArticulos(),
-                    this.checkAuth(),
-                    this.checkSuperAdminAuth(),
-                ]);
+                this.applyTheme();
+                this.$watch('theme', () => this.applyTheme());
+                
+                // Initialize state without blocking theme application
+                this.checkAuth();
+                this.checkSuperAdminAuth();
+                this.fetchCategorias();
+                this.fetchComercios();
+                this.fetchArticulos();
             },
 
             // ─── API Helpers ──────────────────────────────────

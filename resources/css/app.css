@@ -20,12 +20,84 @@
     --color-accent-500: oklch(0.70 0.20 155);
     --color-accent-600: oklch(0.60 0.20 155);
 
-    --color-surface-50: oklch(0.98 0.005 280);
-    --color-surface-100: oklch(0.96 0.01 280);
-    --color-surface-200: oklch(0.92 0.01 280);
-    --color-surface-800: oklch(0.25 0.02 280);
-    --color-surface-900: oklch(0.18 0.02 280);
-    --color-surface-950: oklch(0.13 0.02 280);
+    --color-surface-50: var(--surface-50);
+    --color-surface-100: var(--surface-100);
+    --color-surface-200: var(--surface-200);
+    --color-surface-300: var(--surface-300);
+    --color-surface-400: var(--surface-400);
+    --color-surface-500: var(--surface-500);
+    --color-surface-600: var(--surface-600);
+    --color-surface-700: var(--surface-700);
+    --color-surface-800: var(--surface-800);
+    --color-surface-900: var(--surface-900);
+    --color-surface-950: var(--surface-950);
 
     --color-whatsapp: oklch(0.65 0.18 155);
 }
+
+:root {
+    --surface-50: oklch(0.98 0.005 280);
+    --surface-100: oklch(0.96 0.01 280);
+    --surface-200: oklch(0.92 0.01 280);
+    --surface-300: oklch(0.87 0.02 280);
+    --surface-400: oklch(0.75 0.02 280);
+    --surface-500: oklch(0.60 0.02 280);
+    --surface-600: oklch(0.45 0.02 280);
+    --surface-700: oklch(0.35 0.02 280);
+    --surface-800: oklch(0.25 0.02 280);
+    --surface-900: oklch(0.18 0.02 280);
+    --surface-950: oklch(0.13 0.02 280);
+    
+    --bg-main: var(--surface-950);
+    --text-main: oklch(0.98 0.005 280);
+    --text-muted: oklch(0.98 0.005 280 / 0.5);
+    --border-main: oklch(0.98 0.005 280 / 0.1);
+}
+
+.light {
+    --surface-50: oklch(0.13 0.02 280);
+    --surface-100: oklch(0.18 0.02 280);
+    --surface-200: oklch(0.25 0.02 280);
+    --surface-300: oklch(0.35 0.02 280);
+    --surface-400: oklch(0.45 0.02 280);
+    --surface-500: oklch(0.60 0.02 280);
+    --surface-600: oklch(0.75 0.02 280);
+    --surface-700: oklch(0.87 0.02 280);
+    --surface-800: oklch(0.92 0.01 280);
+    --surface-900: oklch(0.96 0.01 280);
+    --surface-950: oklch(0.98 0.005 280);
+
+    --bg-main: var(--surface-950);
+    --text-main: oklch(0.13 0.02 280);
+    --text-muted: oklch(0.13 0.02 280 / 0.6);
+    --border-main: oklch(0.13 0.02 280 / 0.15);
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+}
+
+/* Fallback/Generic mapping for hardcoded text-white */
+.light .text-white { color: var(--text-main) !important; }
+.light .text-white\/30 { color: var(--text-muted) !important; }
+.light .text-white\/40 { color: var(--text-muted) !important; }
+.light .text-white\/50 { color: var(--text-muted) !important; }
+.light .text-white\/60 { color: var(--text-muted) !important; }
+.light .text-white\/70 { color: var(--text-muted) !important; }
+.light .text-white\/80 { color: var(--text-main) !important; }
+.light .text-white\/90 { color: var(--text-main) !important; }
+
+/* Background fallbacks */
+.light .bg-white\/5 { background-color: oklch(0.13 0.02 280 / 0.05) !important; }
+.light .bg-white\/8 { background-color: oklch(0.13 0.02 280 / 0.08) !important; }
+.light .bg-white\/10 { background-color: oklch(0.13 0.02 280 / 0.1) !important; }
+.light .bg-white\/\[0\.03\] { background-color: oklch(0.13 0.02 280 / 0.03) !important; }
+.light .bg-white\/\[0\.05\] { background-color: oklch(0.13 0.02 280 / 0.05) !important; }
+.light .bg-white\/\[0\.02\] { background-color: oklch(0.13 0.02 280 / 0.02) !important; }
+
+/* Border fallbacks */
+.light .border-white\/5 { border-color: var(--border-main) !important; }
+.light .border-white\/8 { border-color: var(--border-main) !important; }
+.light .border-white\/10 { border-color: var(--border-main) !important; }
+

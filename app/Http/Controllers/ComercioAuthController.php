@@ -24,6 +24,7 @@ class ComercioAuthController extends Controller
             'categoria_comercio' => 'nullable|string|max:255',
         ]);
 
+        $validated['password'] = \Illuminate\Support\Facades\Hash::make($validated['password']);
         $comercio = Comercio::create($validated);
 
         Auth::guard('comercio')->login($comercio);

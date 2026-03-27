@@ -40,8 +40,8 @@ class ComercioAdminController extends Controller
         if ($request->hasFile('imagen_file')) {
             $file = $request->file('imagen_file');
             $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $file->getClientOriginalName());
-            $file->storeAs("fotos/{$comercio->id}", $filename, 'local');
-            $validated['imagen_url'] = url("fotos/{$comercio->id}/{$filename}");
+            $file->storeAs("fotos/{$comercio->id}", $filename, 'public');
+            $validated['imagen_url'] = url("storage/fotos/{$comercio->id}/{$filename}");
         }
 
         $articulo = $comercio->articulos()->create($validated);
@@ -71,8 +71,8 @@ class ComercioAdminController extends Controller
         if ($request->hasFile('imagen_file')) {
             $file = $request->file('imagen_file');
             $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $file->getClientOriginalName());
-            $file->storeAs("fotos/{$comercio->id}", $filename, 'local');
-            $validated['imagen_url'] = url("fotos/{$comercio->id}/{$filename}");
+            $file->storeAs("fotos/{$comercio->id}", $filename, 'public');
+            $validated['imagen_url'] = url("storage/fotos/{$comercio->id}/{$filename}");
         }
 
         $articulo->update($validated);
@@ -113,8 +113,8 @@ class ComercioAdminController extends Controller
         if ($request->hasFile('logo_file')) {
             $file = $request->file('logo_file');
             $filename = 'logo_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->storeAs("fotos/{$comercio->id}", $filename, 'local');
-            $validated['logo_url'] = url("fotos/{$comercio->id}/{$filename}");
+            $file->storeAs("fotos/{$comercio->id}", $filename, 'public');
+            $validated['logo_url'] = url("storage/fotos/{$comercio->id}/{$filename}");
         }
 
         $comercio->update($validated);

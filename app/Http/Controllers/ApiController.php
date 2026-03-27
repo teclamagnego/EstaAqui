@@ -39,7 +39,11 @@ class ApiController extends Controller
             $query->where('comercio_id', $comercioId);
         }
 
-        $articulos = $query->orderBy('created_at', 'desc')->paginate(20);
+        $articulos = $query->join('comercios', 'articulos.comercio_id', '=', 'comercios.id')
+            ->select('articulos.*')
+            ->orderBy('comercios.orden', 'asc')
+            ->orderBy('articulos.orden', 'asc')
+            ->paginate(20);
 
         // Agregar whatsapp_link a cada artículo
         $articulos->getCollection()->transform(function ($articulo) {
@@ -57,6 +61,7 @@ class ApiController extends Controller
     {
         $comercios = Comercio::activo()
             ->withCount(['articulos' => fn($q) => $q->activo()])
+            ->orderBy('orden', 'asc')
             ->orderBy('nombre')
             ->get();
 
@@ -74,7 +79,7 @@ class ApiController extends Controller
 
         $articulos = $comercio->articulos()
             ->activo()
-            ->orderBy('created_at', 'desc')
+            ->orderBy('orden', 'asc')
             ->get()
             ->map(function ($articulo) {
                 $articulo->whatsapp_link = $articulo->whatsapp_link;
@@ -93,5 +98,28 @@ class ApiController extends Controller
     public function categorias(): JsonResponse
     {
         return response()->json(Categoria::orderBy('nombre')->get());
+    }
+
+    /**
+     * Registra clicks para estadísticas.
+     */
+    public function trackClick(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'tipo' => 'required|string|max:50',
+            'comercio_id' => 'required|integer|exists:comercios,id',
+            'articulo_id' => 'nullable|integer|exists:articulos,id',
+        ]);
+
+        \App\Models\ClickLog::create([
+            'tipo' => $validated['tipo'],
+            'comercio_id' => $validated['comercio_id'],
+            'articulo_id' => $validated['articulo_id'] ?? null,
+            'ip_address' => $request->ip(),
+            'user_agent' => substr($request->userAgent() ?? '', 0, 1000),
+            'city' => null, // Optional if we had CF-IPCountry header
+        ]);
+
+        return response()->json(['success' => true]);
     }
 }

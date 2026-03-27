@@ -15,6 +15,7 @@ class Articulo extends Model
         'categoria',
         'imagen_url',
         'activo',
+        'orden',
     ];
 
     protected function casts(): array

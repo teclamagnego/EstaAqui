@@ -18,8 +18,9 @@ class Comercio extends Authenticatable
         'direccion',
         'categoria_comercio',
         'email',
-        'password',
+        'imagen_url',
         'activo',
+        'orden',
     ];
 
     protected $hidden = ['password'];
@@ -44,6 +45,11 @@ class Comercio extends Authenticatable
     public function articulos(): HasMany
     {
         return $this->hasMany(Articulo::class);
+    }
+
+    public function clickLogs(): HasMany
+    {
+        return $this->hasMany(ClickLog::class);
     }
 
     public function scopeActivo($query)

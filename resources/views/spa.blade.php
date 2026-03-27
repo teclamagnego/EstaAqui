@@ -177,6 +177,7 @@
                                 <span class="text-lg font-bold text-white" x-text="'$' + Number(art.precio_ars).toLocaleString('es-AR')"></span>
                                 <a
                                     :href="art.whatsapp_link"
+                                    @click="trackClick('click_whatsapp_articulo', art.comercio_id, art.id)"
                                     target="_blank"
                                     rel="noopener"
                                     class="flex items-center gap-1.5 px-3 py-1.5 bg-whatsapp/90 hover:bg-whatsapp rounded-lg text-white text-xs font-semibold transition-all hover:shadow-lg hover:shadow-whatsapp/25 active:scale-95"
@@ -231,6 +232,7 @@
                         <p class="text-sm text-white/40 mt-2 max-w-xl leading-relaxed" x-text="tiendaData?.comercio?.descripcion"></p>
                         <a
                             :href="'https://wa.me/' + tiendaData?.comercio?.whatsapp"
+                            @click="trackClick('click_whatsapp_comercio', tiendaData?.comercio?.id)"
                             target="_blank"
                             class="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-whatsapp/90 hover:bg-whatsapp rounded-xl text-sm font-semibold text-white transition-all hover:shadow-lg hover:shadow-whatsapp/25"
                         >
@@ -255,7 +257,7 @@
                             <p class="text-[11px] text-white/35 line-clamp-2 mb-3" x-text="art.descripcion_articulo"></p>
                             <div class="flex items-end justify-between gap-2">
                                 <span class="text-lg font-bold text-white" x-text="'$' + Number(art.precio_ars).toLocaleString('es-AR')"></span>
-                                <a :href="art.whatsapp_link" target="_blank" rel="noopener" class="flex items-center gap-1.5 px-3 py-1.5 bg-whatsapp/90 hover:bg-whatsapp rounded-lg text-white text-xs font-semibold transition-all hover:shadow-lg hover:shadow-whatsapp/25 active:scale-95">
+                                <a :href="art.whatsapp_link" @click="trackClick('click_whatsapp_articulo', tiendaData?.comercio?.id, art.id)" target="_blank" rel="noopener" class="flex items-center gap-1.5 px-3 py-1.5 bg-whatsapp/90 hover:bg-whatsapp rounded-lg text-white text-xs font-semibold transition-all hover:shadow-lg hover:shadow-whatsapp/25 active:scale-95">
                                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.09.534 4.058 1.474 5.771L.058 23.7l6.064-1.393A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.785c-1.89 0-3.64-.525-5.146-1.435l-.368-.22-3.81.875.908-3.716-.24-.383A9.77 9.77 0 012.215 12c0-5.397 4.388-9.785 9.785-9.785S21.785 6.603 21.785 12 17.397 21.785 12 21.785z"/></svg>
                                     Stock
                                 </a>
@@ -356,11 +358,33 @@
                     <h1 class="text-2xl font-bold">📋 Mi Panel</h1>
                     <p class="text-sm text-white/40 mt-0.5" x-text="comercioAuth?.nombre"></p>
                 </div>
-                <button @click="showArticuloForm = true; editingArticulo = null; resetArticuloForm()" class="px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 rounded-xl text-sm font-bold transition-all shadow-lg shadow-primary-500/25 relative z-20 cursor-pointer pointer-events-auto">
-                    + Nuevo Artículo
+                <div class="flex flex-col items-end gap-2">
+                    <a :href="`/api/comercio/articulos/ejemplo-excel?_token=${csrfToken}`" download class="text-xs text-primary-400 hover:text-primary-300 underline transition">⬇️ Descargar Excel de ejemplo</a>
+                    <div class="flex items-center gap-2">
+                        <button @click="$refs.excelInput.click()" :disabled="importingExcel" class="px-4 py-2 bg-white/5 border border-white/10 hover:bg-white/10 rounded-xl text-sm font-bold transition-all shadow-lg relative z-20 cursor-pointer pointer-events-auto flex items-center gap-2 disabled:opacity-50">
+                            <span x-show="!importingExcel">📥 Importar Excel</span>
+                            <span x-show="importingExcel">Cargando...</span>
+                        </button>
+                        <input type="file" accept=".xlsx,.csv" x-ref="excelInput" class="hidden" @change="importExcel($event)">
+                        
+                        <button @click="showArticuloForm = true; editingArticulo = null; resetArticuloForm()" class="px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 rounded-xl text-sm font-bold transition-all shadow-lg shadow-primary-500/25 relative z-20 cursor-pointer pointer-events-auto">
+                            + Nuevo Artículo
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Tabs --}}
+            <div class="flex gap-6 border-b border-white/10 mb-6">
+                <button @click="adminTab = 'articulos'" class="pb-3 text-sm font-medium transition-all" :class="adminTab === 'articulos' ? 'text-primary-400 border-b-2 border-primary-500' : 'text-white/50 hover:text-white'">
+                    📦 Mis Artículos
+                </button>
+                <button @click="adminTab = 'informes'; fetchInformes()" class="pb-3 text-sm font-medium transition-all" :class="adminTab === 'informes' ? 'text-primary-400 border-b-2 border-primary-500' : 'text-white/50 hover:text-white'">
+                    📊 Informes
                 </button>
             </div>
 
+            <div x-show="adminTab === 'articulos'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
             {{-- Artículo Form Modal --}}
             <div x-show="showArticuloForm" x-transition class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" @click.self="showArticuloForm = false">
                 <div class="bg-surface-900 rounded-2xl border border-white/10 p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
@@ -388,6 +412,10 @@
                                     </template>
                                 </select>
                             </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-white/50 mb-1.5">Orden de prioridad (Opcional)</label>
+                            <input type="number" x-model="articuloForm.orden" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/25" placeholder="0">
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-white/50 mb-1.5">Foto del producto (opcional)</label>
@@ -430,6 +458,176 @@
                     <p class="text-white/25 text-sm mt-1">Empezá agregando tu primer producto</p>
                 </div>
             </div>
+            </div> {{-- End Articulos Tab --}}
+
+            {{-- Informes Tab --}}
+            <div x-show="adminTab === 'informes'" x-cloak x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+                <template x-if="informesData">
+                    <div class="space-y-6">
+                        {{-- Resumen Totales --}}
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/10 rounded-2xl p-5 shadow-lg relative overflow-hidden">
+                                <div class="absolute -right-4 -bottom-4 text-7xl opacity-5">🏪</div>
+                                <p class="text-xs text-white/50 font-medium mb-1">Visitas al Perfil</p>
+                                <p class="text-3xl font-black text-white" x-text="informesData.totales.vistas_perfil"></p>
+                            </div>
+                            <div class="bg-gradient-to-br from-whatsapp/20 to-whatsapp/5 border border-whatsapp/20 rounded-2xl p-5 shadow-lg shadow-whatsapp/5 relative overflow-hidden">
+                                <div class="absolute -right-4 -bottom-4 text-7xl opacity-5">💬</div>
+                                <p class="text-xs text-whatsapp font-medium mb-1">Clicks a WhatsApp (Perfil)</p>
+                                <p class="text-3xl font-black text-white" x-text="informesData.totales.clicks_whatsapp_perfil"></p>
+                            </div>
+                        </div>
+
+                        {{-- Articulos Clicks --}}
+                        <div class="bg-white/[0.03] border border-white/10 rounded-2xl overflow-hidden">
+                            <div class="px-5 py-4 border-b border-white/10 bg-white/[0.02]">
+                                <h3 class="text-sm font-bold text-white/80">🔥 Artículos más consultados (WhatsApp)</h3>
+                            </div>
+                            <div class="divide-y divide-white/5">
+                                <template x-for="art in informesData.articulos" :key="art.articulo_id">
+                                    <div class="flex items-center justify-between p-4 px-5 hover:bg-white/[0.02] transition">
+                                        <div class="font-medium text-sm text-white/90 truncate mr-4" x-text="art.nombre"></div>
+                                        <div class="flex items-center gap-2 shrink-0">
+                                            <span class="text-xs font-bold bg-white/10 text-white/80 px-2 py-1 rounded-md" x-text="art.clicks + ' clicks'"></span>
+                                        </div>
+                                    </div>
+                                </template>
+                                <div x-show="informesData.articulos.length === 0" class="p-8 text-center text-sm text-white/40">
+                                    Aún no hay interacciones con los artículos.
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Recientes --}}
+                        <div class="bg-white/[0.03] border border-white/10 rounded-2xl overflow-hidden">
+                            <div class="px-5 py-4 border-b border-white/10 bg-white/[0.02]">
+                                <h3 class="text-sm font-bold text-white/80">📝 Registro de actividad reciente</h3>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse text-xs">
+                                    <thead class="bg-white/[0.02] text-white/40 border-b border-white/5">
+                                        <tr>
+                                            <th class="p-3 px-5 font-medium">Fecha</th>
+                                            <th class="p-3 px-5 font-medium">Evento</th>
+                                            <th class="p-3 px-5 font-medium">Detalle</th>
+                                            <th class="p-3 px-5 font-medium whitespace-nowrap">IP / Info</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-white/5 text-white/70">
+                                        <template x-for="log in informesData.recientes">
+                                            <tr class="hover:bg-white/[0.02]">
+                                                <td class="p-3 px-5 whitespace-nowrap" x-text="log.fecha"></td>
+                                                <td class="p-3 px-5 font-medium" :class="{'text-whatsapp': log.tipo.includes('whatsapp'), 'text-primary-400': log.tipo === 'vista_comercio'}" x-text="log.tipo === 'vista_comercio' ? 'Vista Perfil' : (log.tipo === 'click_whatsapp_articulo' ? 'Consulta Artículo' : 'WhatsApp Comer.')"></td>
+                                                <td class="p-3 px-5 max-w-[150px] truncate" x-text="log.articulo || '-'"></td>
+                                                <td class="p-3 px-5 font-mono text-[10px] text-white/30 truncate max-w-[150px]" :title="log.user_agent" x-text="log.ip"></td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                                <div x-show="informesData.recientes.length === 0" class="p-8 text-center text-sm text-white/40">
+                                    Aún no hay actividad registrada.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <div x-show="!informesData" class="py-20 text-center">
+                    <div class="w-8 h-8 border-2 border-primary-500/30 border-t-primary-500 rounded-full animate-spin mx-auto mb-4"></div>
+                    <p class="text-white/40 text-sm">Cargando informes...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    {{-- ═══════════════════════════════════════════════════════════════════
+         SUPER ADMIN
+    ═══════════════════════════════════════════════════════════════════ --}}
+    <main x-show="view === 'superadmin_login'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+        <div class="max-w-md mx-auto px-4 py-20">
+            <div class="bg-surface-900 rounded-2xl border border-white/10 p-8 shadow-2xl">
+                <div class="text-center mb-6">
+                    <span class="text-3xl">🛡️</span>
+                    <h2 class="text-xl font-bold mt-2">Acceso Administrador</h2>
+                </div>
+                <div x-show="superAdminError" class="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm" x-text="superAdminError"></div>
+                <form @submit.prevent="loginSuperAdmin()" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-medium text-white/50 mb-1.5">Email</label>
+                        <input type="email" x-model="superAdminLoginData.email" required class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-primary-500/50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-white/50 mb-1.5">Contraseña</label>
+                        <input type="password" x-model="superAdminLoginData.password" required class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-primary-500/50">
+                    </div>
+                    <button type="submit" :disabled="authLoading" class="w-full py-3 bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl text-sm font-bold shadow-lg transition disabled:opacity-50">
+                        Ingresar
+                    </button>
+                </form>
+                <div class="mt-4 text-center">
+                    <button @click="goHome()" class="text-xs text-white/40 hover:text-white transition">Volver al sitio</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <main x-show="view === 'superadmin_panel'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+            <div class="flex items-center justify-between mb-8 border-b border-white/10 pb-4">
+                <div>
+                    <h1 class="text-2xl font-black text-white/90">🛡️ Panel Super Admin</h1>
+                    <p class="text-sm text-white/40">Gestión de comercios</p>
+                </div>
+                <button @click="logoutSuperAdmin()" class="px-4 py-2 bg-white/5 border border-white/10 hover:bg-white/10 rounded-xl text-sm font-bold text-white/80 transition shadow-lg">
+                    Salir
+                </button>
+            </div>
+
+            <div class="bg-surface-900/50 rounded-2xl border border-white/5 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead class="bg-white/[0.03] text-white/50">
+                            <tr>
+                                <th class="p-4 font-medium">Comercio</th>
+                                <th class="p-4 font-medium">Prioridad</th>
+                                <th class="p-4 font-medium">Ingreso</th>
+                                <th class="p-4 font-medium">Artículos</th>
+                                <th class="p-4 font-medium">Interacciones</th>
+                                <th class="p-4 font-medium">Estado</th>
+                                <th class="p-4 font-medium text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5 text-white/80">
+                            <template x-for="com in superAdminComercios" :key="com.id">
+                                <tr class="hover:bg-white/[0.02]">
+                                    <td class="p-4">
+                                        <div class="font-bold text-white/90 truncate max-w-[200px]" x-text="com.nombre"></div>
+                                        <div class="text-[10px] text-white/40 mt-0.5" x-text="com.email"></div>
+                                    </td>
+                                    <td class="p-4">
+                                        <input type="number" :value="com.orden" @change="updateSuperAdminOrden(com.id, $event.target.value)" class="w-16 bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-center focus:border-primary-500/50 outline-none">
+                                    </td>
+                                    <td class="p-4 text-xs whitespace-nowrap" x-text="com.fecha_ingreso"></td>
+                                    <td class="p-4 text-xs" x-text="com.articulos_count + ' arts'"></td>
+                                    <td class="p-4 text-xs">
+                                        <div class="text-white/60">Totales: <span class="font-bold text-white/80" x-text="com.total_clicks"></span></div>
+                                        <div class="text-whatsapp">WA: <span class="font-bold" x-text="com.whatsapp_clicks"></span></div>
+                                    </td>
+                                    <td class="p-4">
+                                        <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-bold" :class="com.activo ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'">
+                                            <span x-text="com.activo ? 'HABILITADO' : 'SUSPENDIDO'"></span>
+                                        </span>
+                                    </td>
+                                    <td class="p-4 text-right whitespace-nowrap space-x-2">
+                                        <button @click="toggleSuperAdminComercio(com.id)" class="text-xs px-2 py-1 rounded bg-white/5 hover:bg-white/10 transition" x-text="com.activo ? 'Suspender' : 'Habilitar'"></button>
+                                        <button @click="resetSuperAdminPassword(com.id)" class="text-xs px-2 py-1 rounded bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 transition">Reset Clave</button>
+                                        <button @click="deleteSuperAdminComercio(com.id)" class="text-xs px-2 py-1 rounded bg-red-500/10 text-red-500 hover:bg-red-500/20 transition">Eliminar</button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -443,6 +641,7 @@
                 <span class="text-sm font-bold bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">EstaAqui</span>
             </div>
             <p class="text-xs text-white/25">Catálogo unificado de comercios locales · Comprá cerca, comprá local</p>
+            <a href="#" @click.prevent="goToSuperAdmin()" class="inline-block mt-4 text-[11px] text-white/20 hover:text-white/50 transition underline decoration-white/20 underline-offset-2">🛡️ Panel General Administrador</a>
         </div>
     </footer>
 
@@ -477,9 +676,18 @@
 
             // Admin
             misArticulos: [],
+            adminTab: 'articulos',
+            informesData: null,
             showArticuloForm: false,
+            importingExcel: false,
             editingArticulo: null,
-            articuloForm: { nombre_producto: '', descripcion_articulo: '', precio_ars: '', categoria: '', imagen_url: '', imagen_file: null },
+            articuloForm: { nombre_producto: '', descripcion_articulo: '', precio_ars: '', categoria: '', imagen_url: '', imagen_file: null, orden: 0 },
+
+            // Super Admin
+            superAdminAuth: null,
+            superAdminComercios: [],
+            superAdminLoginData: { email: '', password: '' },
+            superAdminError: '',
 
             // CSRF
             get csrfToken() {
@@ -493,6 +701,7 @@
                     this.fetchComercios(),
                     this.fetchArticulos(),
                     this.checkAuth(),
+                    this.checkSuperAdminAuth(),
                 ]);
             },
 
@@ -597,8 +806,19 @@
                 this.loading = true;
                 try {
                     this.tiendaData = await this.apiFetch(`/api/comercios/${slug}`);
+                    this.trackClick('vista_comercio', this.tiendaData.comercio.id);
                 } catch (e) { console.error('Error cargando tienda:', e); }
                 this.loading = false;
+            },
+
+            async trackClick(tipo, comercioId, articuloId = null) {
+                if (!comercioId) return;
+                try {
+                    await this.apiFetch('/api/track-click', {
+                        method: 'POST',
+                        body: JSON.stringify({ tipo, comercio_id: comercioId, articulo_id: articuloId })
+                    });
+                } catch (e) {} // Silent error
             },
 
             // ─── Auth ─────────────────────────────────────────
@@ -659,8 +879,14 @@
                 } catch (e) { console.error('Error cargando mis artículos:', e); }
             },
 
+            async fetchInformes() {
+                try {
+                    this.informesData = await this.apiFetch('/api/comercio/informes');
+                } catch (e) { console.error('Error cargando informes', e); }
+            },
+
             resetArticuloForm() {
-                this.articuloForm = { nombre_producto: '', descripcion_articulo: '', precio_ars: '', categoria: '', imagen_url: '', imagen_file: null };
+                this.articuloForm = { nombre_producto: '', descripcion_articulo: '', precio_ars: '', categoria: '', imagen_url: '', imagen_file: null, orden: 0 };
                 if (this.$refs.imagenInput) this.$refs.imagenInput.value = '';
             },
 
@@ -673,6 +899,7 @@
                     categoria: art.categoria,
                     imagen_url: art.imagen_url || '',
                     imagen_file: null,
+                    orden: art.orden || 0,
                 };
                 if (this.$refs.imagenInput) this.$refs.imagenInput.value = '';
                 this.showArticuloForm = true;
@@ -685,6 +912,7 @@
                     if (this.articuloForm.descripcion_articulo) formData.append('descripcion_articulo', this.articuloForm.descripcion_articulo);
                     formData.append('precio_ars', this.articuloForm.precio_ars);
                     formData.append('categoria', this.articuloForm.categoria);
+                    formData.append('orden', this.articuloForm.orden || 0);
                     if (this.articuloForm.imagen_url) formData.append('imagen_url', this.articuloForm.imagen_url);
                     if (this.articuloForm.imagen_file) formData.append('imagen_file', this.articuloForm.imagen_file);
 
@@ -714,6 +942,128 @@
                     this.fetchMisArticulos();
                 } catch (e) { alert('Error al eliminar'); }
             },
+
+            async importExcel(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const formData = new FormData();
+                formData.append('excel_file', file);
+
+                this.importingExcel = true;
+                if (this.$refs.excelInput) {
+                    this.$refs.excelInput.value = ''; // reset file input
+                }
+
+                try {
+                    const res = await this.apiFetch('/api/comercio/articulos/importar-excel', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    let msg = res.message || 'Importación exitosa';
+                    if (res.errors && res.errors.length > 0) {
+                        msg += '\n\nErrores encontrados:\n' + res.errors.slice(0, 10).join('\n') + (res.errors.length > 10 ? '\n...y más.' : '');
+                    }
+                    alert(msg);
+                    this.fetchMisArticulos();
+                } catch (e) {
+                    let errorMessage = e.message || 'Error desconocido';
+                    if (e.errors && e.errors.excel_file) {
+                        errorMessage = e.errors.excel_file[0];
+                    }
+                    alert('Error al importar: ' + errorMessage);
+                }
+                this.importingExcel = false;
+            },
+
+            // ─── Super Admin Functions ─────────────────────────
+            goToSuperAdmin() {
+                if (this.superAdminAuth) {
+                    this.view = 'superadmin_panel';
+                    this.fetchSuperAdminComercios();
+                } else {
+                    this.view = 'superadmin_login';
+                }
+            },
+
+            async checkSuperAdminAuth() {
+                try {
+                    const data = await this.apiFetch('/api/admin/me');
+                    this.superAdminAuth = data.user;
+                } catch (e) { this.superAdminAuth = null; }
+            },
+
+            async loginSuperAdmin() {
+                this.authLoading = true;
+                this.superAdminError = '';
+                try {
+                    const data = await this.apiFetch('/api/admin/login', {
+                        method: 'POST',
+                        body: JSON.stringify(this.superAdminLoginData)
+                    });
+                    this.superAdminAuth = data.user;
+                    this.view = 'superadmin_panel';
+                    this.fetchSuperAdminComercios();
+                } catch (e) {
+                    this.superAdminError = e.errors?.email?.[0] || 'Credenciales incorrectas';
+                }
+                this.authLoading = false;
+            },
+
+            async logoutSuperAdmin() {
+                try {
+                    await this.apiFetch('/api/admin/logout', { method: 'POST' });
+                } catch (e) {}
+                this.superAdminAuth = null;
+                this.view = 'home';
+            },
+
+            async fetchSuperAdminComercios() {
+                try {
+                    this.superAdminComercios = await this.apiFetch('/api/admin/comercios');
+                } catch (e) { console.error('Error cargando comercios admin', e); }
+            },
+
+            async toggleSuperAdminComercio(id) {
+                if(!confirm('¿Seguro quieres cambiar el estado de este comercio?')) return;
+                try {
+                    await this.apiFetch(`/api/admin/comercios/${id}/toggle-status`, { method: 'POST' });
+                    this.fetchSuperAdminComercios();
+                } catch (e) { alert('Error cambiando estado'); }
+            },
+
+            async deleteSuperAdminComercio(id) {
+                if(!confirm('¡PELIGRO! ¿Estás absolutamente seguro de ELIMINAR todo este comercio? Toda su info y artículos se perderán.')) return;
+                try {
+                    await this.apiFetch(`/api/admin/comercios/${id}`, { method: 'DELETE' });
+                    this.fetchSuperAdminComercios();
+                } catch (e) { alert('Error eliminando comercio'); }
+            },
+
+            async resetSuperAdminPassword(id) {
+                const newPass = prompt('Ingresa la nueva contraseña (mínimo 6 caracteres):');
+                if(!newPass || newPass.length < 6) {
+                    if(newPass) alert('La contraseña debe tener al menos 6 caracteres');
+                    return;
+                }
+                try {
+                    await this.apiFetch(`/api/admin/comercios/${id}/reset-password`, {
+                        method: 'POST',
+                        body: JSON.stringify({ password: newPass })
+                    });
+                    alert('Contraseña reseteada correctamente.');
+                } catch (e) { alert('Error reseteando contraseña'); }
+            },
+
+            async updateSuperAdminOrden(id, orden) {
+                try {
+                    await this.apiFetch(`/api/admin/comercios/${id}/update-orden`, {
+                        method: 'POST',
+                        body: JSON.stringify({ orden: parseInt(orden) })
+                    });
+                } catch (e) { console.error('Error actualizando orden', e); }
+            }
         };
     }
     </script>

@@ -50,6 +50,12 @@ class ComercioAuthController extends Controller
             ]);
         }
 
+        if (!$comercio->activo) {
+            throw ValidationException::withMessages([
+                'email' => ['Este comercio se encuentra suspendido. Por favor, contacte con el administrador.'],
+            ]);
+        }
+
         Auth::guard('comercio')->login($comercio);
         $request->session()->regenerate();
 

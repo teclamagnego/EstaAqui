@@ -25,4 +25,32 @@ Route::middleware(ComercioAuth::class)->prefix('comercio')->group(function () {
     Route::put('/articulos/{id}', [ComercioAdminController::class, 'update']);
     Route::delete('/articulos/{id}', [ComercioAdminController::class, 'destroy']);
     Route::put('/perfil', [ComercioAdminController::class, 'updateProfile']);
+    
+    // Excel Import endpoints
+    Route::get('/articulos/ejemplo-excel', [ComercioAdminController::class, 'downloadExcelExample']);
+    Route::post('/articulos/importar-excel', [ComercioAdminController::class, 'importExcel']);
+    
+    // Informes
+    Route::get('/informes', [ComercioAdminController::class, 'informes']);
+});
+
+// ─── Tracking ──────────────────────────────────────────────
+Route::post('/track-click', [ApiController::class, 'trackClick']);
+
+// ─── Super Admin (Web Guard) ────────────────────────────────────
+use App\Http\Controllers\AdminController;
+use App\Http\Middleware\AdminAuth;
+
+Route::post('/admin/login', [AdminController::class, 'login']);
+Route::post('/admin/logout', [AdminController::class, 'logout']);
+Route::get('/admin/me', [AdminController::class, 'me']);
+
+Route::middleware(AdminAuth::class)->prefix('admin')->group(function () {
+    Route::get('/comercios', [AdminController::class, 'comercios']);
+    Route::post('/comercios/{id}/toggle-status', [AdminController::class, 'toggleComercioStatus']);
+    Route::delete('/comercios/{id}', [AdminController::class, 'deleteComercio']);
+    Route::post('/comercios/{id}/reset-password', [AdminController::class, 'resetComercioPassword']);
+    Route::post('/comercios/{id}/update-orden', [AdminController::class, 'updateOrden']);
+    Route::get('/comercios/{id}/informes', [AdminController::class, 'comercioInformes']);
+    Route::get('/comercios/{id}/articulos', [AdminController::class, 'comercioArticulos']);
 });

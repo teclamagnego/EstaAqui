@@ -18,7 +18,8 @@ Route::get('/fotos/{idcomercio}/{filename}', function ($idcomercio, $filename) {
 });
 
 Route::get('/manifest.json', function () {
-    $icon = \App\Models\Setting::get('app_icon', '/icon-192.png');
+    $icon192 = \App\Models\Setting::get('app_icon', '/icon-192.png');
+    $icon512 = \App\Models\Setting::get('app_icon', '/icon-512.png');
     $name = \App\Models\Setting::get('app_name', 'EstaAqui');
     
     return response()->json([
@@ -26,23 +27,29 @@ Route::get('/manifest.json', function () {
         "short_name" => $name,
         "start_url" => "/",
         "display" => "standalone",
-        "background_color" => "#0a0a0a",
-        "theme_color" => "#ff3d00",
+        "background_color" => "#ea580c",
+        "theme_color" => "#ea580c",
         "icons" => [
             [
-                "src" => $icon,
+                "src" => $icon192,
                 "sizes" => "192x192",
                 "type" => "image/png",
-                "purpose" => "any maskable"
+                "purpose" => "any"
             ],
             [
-                "src" => $icon,
+                "src" => $icon512,
                 "sizes" => "512x512",
                 "type" => "image/png",
-                "purpose" => "any maskable"
+                "purpose" => "any"
+            ],
+            [
+                "src" => $icon192,
+                "sizes" => "192x192",
+                "type" => "image/png",
+                "purpose" => "maskable"
             ]
         ]
-    ]);
+    ])->header('Content-Type', 'application/manifest+json');
 });
 
 Route::get('/{any?}', function () {

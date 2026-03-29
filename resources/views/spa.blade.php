@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>EstaAqui — Comercios locales, cerca tuyo</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -25,9 +25,9 @@
     
     {{-- PWA Tags --}}
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#0a0a0a">
+    <meta name="theme-color" content="#ea580c">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="EstaAqui">
 </head>
 <body class="min-h-screen font-sans antialiased transition-colors duration-500" :class="theme" x-data="app()" x-cloak>
@@ -39,10 +39,10 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
             {{-- Logo --}}
             <a href="#" @click.prevent="goHome()" class="flex items-center gap-2 shrink-0 group">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-lg font-black shadow-lg shadow-primary-500/25 group-hover:shadow-primary-500/40 transition-shadow">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-xl font-black shadow-lg shadow-primary-500/30 group-hover:scale-105 transition-transform">
                     📍
                 </div>
-                <span class="text-xl font-extrabold bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent hidden sm:block">EstaAqui</span>
+                <span class="text-xl font-black tracking-tight text-white hidden sm:block">EstaAqui</span>
             </a>
 
             {{-- Search Bar --}}
@@ -112,11 +112,11 @@
         <section class="relative overflow-hidden">
             <div class="absolute inset-0 bg-gradient-to-b from-primary-900/30 via-transparent to-transparent"></div>
             <div class="relative max-w-7xl mx-auto px-4 sm:px-6 pt-12 pb-6 sm:pt-16 sm:pb-8 text-center">
-                <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
-                    Encontrá <span class="bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">productos locales</span><br>
-                    cerca tuyo
+                <h1 class="text-4xl sm:text-6xl font-black tracking-tight leading-none mb-4">
+                    Encontrá <span class="text-primary-500">productos</span><br>
+                    de tu ciudad
                 </h1>
-                <p class="mt-3 text-base sm:text-lg text-white/50 max-w-lg mx-auto">Catálogo unificado de comercios de tu ciudad. Consultá stock y comprá directo por WhatsApp.</p>
+                <p class="mt-4 text-base sm:text-lg text-white/50 max-w-lg mx-auto leading-relaxed">Tu catálogo local unificado. Comprá directo, fácil y rápido por WhatsApp sin intermediarios.</p>
             </div>
         </section>
 
@@ -148,7 +148,7 @@
             <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
                 <template x-for="com in comercios" :key="com.id">
                     <button @click="goToTienda(com.slug)" class="shrink-0 group">
-                        <div class="w-28 sm:w-32 p-3 bg-white/5 rounded-2xl border border-white/8 hover:border-primary-500/30 hover:bg-white/8 transition-all text-center">
+                        <div class="w-28 sm:w-32 p-3 bg-white/5 rounded-3xl border border-white/8 hover:border-primary-500/50 hover:bg-white/10 transition-all text-center">
                             <div class="w-12 h-12 mx-auto rounded-xl bg-gradient-to-br from-primary-500/30 to-accent-500/30 flex items-center justify-center text-2xl mb-2 overflow-hidden border border-white/5">
                                 <template x-if="com.logo_url">
                                     <img :src="com.logo_url" class="w-full h-full object-cover">
@@ -190,9 +190,9 @@
             </div>
 
             {{-- Product Grid --}}
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4" x-show="!loading">
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6" x-show="!loading">
                 <template x-for="art in filteredArticulos" :key="art.id">
-                    <div @click="openArticuloDetail(art)" class="cursor-pointer group bg-white/[0.03] rounded-2xl border border-white/8 overflow-hidden hover:border-primary-500/30 hover:bg-white/[0.06] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary-500/5">
+                    <div @click="openArticuloDetail(art)" class="cursor-pointer group bg-white/[0.03] rounded-[32px] border border-white/8 overflow-hidden hover:border-primary-500/50 hover:bg-white/[0.06] transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary-500/10">
                         {{-- Image --}}
                         <div class="aspect-square overflow-hidden bg-white/5 relative">
                             <img
@@ -217,12 +217,12 @@
                             <p class="text-[11px] text-white/35 line-clamp-2 mb-3 leading-relaxed" x-text="art.descripcion_articulo"></p>
                             <div class="flex items-end justify-between gap-2">
                                 <span class="text-lg font-bold text-white" x-text="'$' + Number(art.precio_ars).toLocaleString('es-AR')"></span>
-                                <a
+                                    <a
                                     :href="art.whatsapp_link"
                                     @click.stop="trackClick('click_whatsapp_articulo', art.comercio_id, art.id)"
                                     target="_blank"
                                     rel="noopener"
-                                    class="flex items-center gap-1.5 px-3 py-1.5 bg-whatsapp/90 hover:bg-whatsapp rounded-lg text-white text-xs font-semibold transition-all hover:shadow-lg hover:shadow-whatsapp/25 active:scale-95"
+                                    class="flex items-center gap-1.5 px-4 py-2 bg-whatsapp hover:bg-whatsapp/90 rounded-2xl text-white text-xs font-bold transition-all hover:shadow-lg hover:shadow-whatsapp/30 active:scale-95"
                                     id="whatsapp-btn"
                                 >
                                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.09.534 4.058 1.474 5.771L.058 23.7l6.064-1.393A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.785c-1.89 0-3.64-.525-5.146-1.435l-.368-.22-3.81.875.908-3.716-.24-.383A9.77 9.77 0 012.215 12c0-5.397 4.388-9.785 9.785-9.785S21.785 6.603 21.785 12 17.397 21.785 12 21.785z"/></svg>
@@ -255,9 +255,10 @@
             </button>
 
             {{-- Shop Header --}}
-            <div x-show="tiendaData" class="bg-gradient-to-r from-primary-900/30 to-accent-600/10 rounded-2xl border border-white/8 p-6 sm:p-8 mb-8">
-                <div class="flex items-start gap-4 sm:gap-6">
-                    <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-3xl sm:text-4xl shrink-0 shadow-xl shadow-primary-500/20 overflow-hidden border border-white/10">
+            <div x-show="tiendaData" class="bg-gradient-to-br from-white/5 to-white/[0.02] rounded-[32px] border border-white/8 p-6 sm:p-10 mb-8 relative overflow-hidden">
+                <div class="absolute -right-12 -bottom-12 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl"></div>
+                <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8 relative z-10 text-center sm:text-left">
+                    <div class="w-24 h-24 sm:w-32 sm:h-32 rounded-3xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-4xl sm:text-5xl shrink-0 shadow-2xl shadow-primary-500/30 overflow-hidden border-2 border-white/10">
                         <template x-if="tiendaData?.comercio?.logo_url">
                             <img :src="tiendaData.comercio.logo_url" class="w-full h-full object-cover">
                         </template>
@@ -281,20 +282,20 @@
                             :href="'https://wa.me/' + tiendaData?.comercio?.whatsapp"
                             @click="trackClick('click_whatsapp_comercio', tiendaData?.comercio?.id)"
                             target="_blank"
-                            class="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-whatsapp/90 hover:bg-whatsapp rounded-xl text-sm font-semibold text-white transition-all hover:shadow-lg hover:shadow-whatsapp/25"
+                            class="inline-flex items-center gap-2 mt-6 px-6 py-3 bg-whatsapp hover:bg-whatsapp/90 rounded-2xl text-sm font-bold text-white transition-all hover:shadow-xl hover:shadow-whatsapp/30 active:scale-95"
                         >
                             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.09.534 4.058 1.474 5.771L.058 23.7l6.064-1.393A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.785c-1.89 0-3.64-.525-5.146-1.435l-.368-.22-3.81.875.908-3.716-.24-.383A9.77 9.77 0 012.215 12c0-5.397 4.388-9.785 9.785-9.785S21.785 6.603 21.785 12 17.397 21.785 12 21.785z"/></svg>
-                            Contactar comercio
+                            Contactar por WhatsApp
                         </a>
                     </div>
                 </div>
             </div>
 
             {{-- Products --}}
-            <h2 class="text-lg font-bold text-white/80 mb-4" x-text="'Productos (' + (tiendaData?.articulos?.length || 0) + ')'"></h2>
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 pb-16">
+            <h2 class="text-xl font-black text-white/90 mb-6" x-text="'Nuestros Productos (' + (tiendaData?.articulos?.length || 0) + ')'"></h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 pb-16">
                 <template x-for="art in (tiendaData?.articulos || [])" :key="art.id">
-                    <div @click="openArticuloDetail(art)" class="cursor-pointer group bg-white/[0.03] rounded-2xl border border-white/8 overflow-hidden hover:border-primary-500/30 hover:bg-white/[0.06] transition-all duration-300 hover:-translate-y-0.5">
+                    <div @click="openArticuloDetail(art)" class="cursor-pointer group bg-white/[0.03] rounded-[32px] border border-white/8 overflow-hidden hover:border-primary-500/50 hover:bg-white/[0.06] transition-all duration-500 hover:-translate-y-1">
                         <div class="aspect-square overflow-hidden bg-white/5">
                             <img :src="art.imagen_url" :alt="art.nombre_producto" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
                         </div>
@@ -303,8 +304,8 @@
                             <h3 class="text-sm font-semibold text-white/90 leading-snug line-clamp-2 mt-1 mb-1" x-text="art.nombre_producto"></h3>
                             <p class="text-[11px] text-white/35 line-clamp-2 mb-3" x-text="art.descripcion_articulo"></p>
                             <div class="flex items-end justify-between gap-2">
-                                <span class="text-lg font-bold text-white" x-text="'$' + Number(art.precio_ars).toLocaleString('es-AR')"></span>
-                                <a :href="art.whatsapp_link" @click.stop="trackClick('click_whatsapp_articulo', tiendaData?.comercio?.id, art.id)" target="_blank" rel="noopener" class="flex items-center gap-1.5 px-3 py-1.5 bg-whatsapp/90 hover:bg-whatsapp rounded-lg text-white text-xs font-semibold transition-all hover:shadow-lg hover:shadow-whatsapp/25 active:scale-95">
+                                <span class="text-lg font-black text-white" x-text="'$' + Number(art.precio_ars).toLocaleString('es-AR')"></span>
+                                <a :href="art.whatsapp_link" @click.stop="trackClick('click_whatsapp_articulo', tiendaData?.comercio?.id, art.id)" target="_blank" rel="noopener" class="flex items-center gap-1.5 px-4 py-2 bg-whatsapp hover:bg-whatsapp/90 rounded-2xl text-white text-xs font-bold transition-all hover:shadow-lg hover:shadow-whatsapp/30 active:scale-95">
                                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.09.534 4.058 1.474 5.771L.058 23.7l6.064-1.393A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.785c-1.89 0-3.64-.525-5.146-1.435l-.368-.22-3.81.875.908-3.716-.24-.383A9.77 9.77 0 012.215 12c0-5.397 4.388-9.785 9.785-9.785S21.785 6.603 21.785 12 17.397 21.785 12 21.785z"/></svg>
                                     Stock
                                 </a>
@@ -326,11 +327,11 @@
                 Volver
             </button>
 
-            <div class="bg-white/[0.03] rounded-2xl border border-white/8 p-6 sm:p-8">
-                <div class="text-center mb-6">
-                    <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-2xl mb-3 shadow-lg shadow-primary-500/25">🏪</div>
-                    <h2 class="text-xl font-bold" x-text="authMode === 'login' ? 'Ingresá a tu comercio' : 'Registrá tu comercio'"></h2>
-                    <p class="text-sm text-white/40 mt-1">Gestioná tus productos y recibí consultas</p>
+            <div class="bg-white/[0.03] rounded-[32px] border border-white/8 p-8 sm:p-10 shadow-2xl">
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 mx-auto rounded-3xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-3xl mb-4 shadow-xl shadow-primary-500/30">🏪</div>
+                    <h2 class="text-2xl font-black" x-text="authMode === 'login' ? 'Tu Comercio' : 'Registrate'"></h2>
+                    <p class="text-sm text-white/40 mt-2">Gestioná tus productos y recibí consultas directas</p>
                 </div>
 
                 {{-- Error --}}
@@ -346,9 +347,9 @@
                         <label class="block text-xs font-medium text-white/50 mb-1.5">Contraseña</label>
                         <input type="password" x-model="authForm.password" required class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/25 focus:outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/25" placeholder="••••••">
                     </div>
-                    <button type="submit" :disabled="authLoading" class="w-full py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 rounded-xl text-sm font-bold transition-all disabled:opacity-50 shadow-lg shadow-primary-500/25">
-                        <span x-show="!authLoading">Ingresar</span>
-                        <span x-show="authLoading">Ingresando...</span>
+                    <button type="submit" :disabled="authLoading" class="w-full py-4 bg-primary-500 hover:bg-primary-600 rounded-2xl text-sm font-black transition-all disabled:opacity-50 shadow-lg shadow-primary-500/25">
+                        <span x-show="!authLoading" x-text="authMode === 'login' ? 'Entrar ahora' : 'Crear mi cuenta'"></span>
+                        <span x-show="authLoading">Procesando...</span>
                     </button>
                 </form>
 
@@ -436,9 +437,9 @@
 
             <div x-show="adminTab === 'articulos'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
             {{-- Artículo Form Modal --}}
-            <div x-show="showArticuloForm" x-transition class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" @click.self="showArticuloForm = false">
-                <div class="bg-surface-900 rounded-2xl border border-white/10 p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
-                    <h3 class="text-lg font-bold mb-4" x-text="editingArticulo ? 'Editar Artículo' : 'Nuevo Artículo'"></h3>
+            <div x-show="showArticuloForm" x-transition class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md" @click.self="showArticuloForm = false">
+                <div class="bg-surface-900 rounded-[32px] border border-white/10 p-8 w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-3xl">
+                    <h3 class="text-xl font-black mb-6" x-text="editingArticulo ? 'Editar Artículo' : 'Nuevo Artículo'"></h3>
                     <form @submit.prevent="saveArticulo()" class="space-y-4">
                         <div>
                             <label class="block text-xs font-medium text-white/50 mb-1.5">Nombre del producto *</label>
@@ -533,12 +534,12 @@
             {{-- My Articles List --}}
             <div class="space-y-3">
                 <template x-for="art in misArticulos" :key="art.id">
-                    <div class="flex items-center gap-4 bg-white/[0.03] rounded-2xl border border-white/8 p-4 hover:bg-white/[0.05] transition">
-                        <img :src="art.imagen_url || ''" :alt="art.nombre_producto" class="w-16 h-16 rounded-xl object-cover bg-white/5 shrink-0">
+                    <div class="flex items-center gap-4 bg-white/[0.03] rounded-3xl border border-white/8 p-4 hover:bg-white/[0.05] transition">
+                        <img :src="art.imagen_url || ''" :alt="art.nombre_producto" class="w-16 h-16 rounded-2xl object-cover bg-white/5 shrink-0">
                         <div class="flex-1 min-w-0">
-                            <h4 class="font-semibold text-sm text-white/90 truncate" x-text="art.nombre_producto"></h4>
+                            <h4 class="font-bold text-sm text-white/90 truncate" x-text="art.nombre_producto"></h4>
                             <p class="text-xs text-white/40 mt-0.5" x-text="art.categoria"></p>
-                            <p class="text-sm font-bold text-white mt-1" x-text="`$${Number(art.precio_ars).toLocaleString('es-AR')}`"></p>
+                            <p class="text-sm font-black text-white mt-1" x-text="`$${Number(art.precio_ars).toLocaleString('es-AR')}`"></p>
                         </div>
                         <div class="flex items-center gap-2 shrink-0">
                             <button @click="editArticulo(art)" class="p-2 bg-white/5 rounded-lg hover:bg-primary-500/20 transition text-white/40 hover:text-primary-300">

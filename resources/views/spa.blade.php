@@ -842,15 +842,26 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </main>
         </div>
     </main>
 
-    {{-- ═══════════════════════════════════════════════════════════════════
-         FOOTER
-    ═══════════════════════════════════════════════════════════════════ --}}
+    <footer class="max-w-7xl mx-auto px-4 sm:px-6 py-12 border-t border-white/5 mt-auto">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6 opacity-40 hover:opacity-100 transition-opacity duration-500">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-sm">📍</div>
+                <div class="flex flex-col">
+                    <span class="text-xs font-black tracking-tight text-white uppercase" x-text="appSettings.app_name"></span>
+                    <span class="text-[10px] text-white/50">© 2026 — Todos los derechos reservados</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <button @click="goToSuperAdmin()" class="group flex items-center gap-2 text-[10px] text-white/30 hover:text-primary-400 transition-colors uppercase tracking-widest font-bold">
+                    <span class="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-primary-500 transition-colors"></span>
+                    Acceso Super Admin
+                </button>
+            </div>
+        </div>
     </footer>
 
     {{-- ═══════════════════════════════════════════════════════════════════

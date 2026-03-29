@@ -857,8 +857,7 @@
             
             <div class="flex items-center gap-6">
                 <button @click="goToSuperAdmin()" class="group flex items-center gap-2 text-[10px] text-white/30 hover:text-primary-400 transition-colors uppercase tracking-widest font-bold">
-                    <span class="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-primary-500 transition-colors"></span>
-                    Acceso Super Admin
+                    &pi;
                 </button>
             </div>
         </div>

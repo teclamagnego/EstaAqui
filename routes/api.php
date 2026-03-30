@@ -4,6 +4,7 @@ use App\Http\Controllers\ApiController;
 use App\Http\Controllers\ComercioAuthController;
 use App\Http\Controllers\ComercioAdminController;
 use App\Http\Middleware\ComercioAuth;
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 
 // ─── Endpoints Públicos ─────────────────────────────────────────
@@ -11,6 +12,7 @@ Route::get('/articulos', [ApiController::class, 'articulos']);
 Route::get('/comercios', [ApiController::class, 'comercios']);
 Route::get('/comercios/{slug}', [ApiController::class, 'comercioDetalle']);
 Route::get('/categorias', [ApiController::class, 'categorias']);
+Route::get('/settings', [AdminController::class, 'getSettings']);
 
 // ─── Auth Comercio ──────────────────────────────────────────────
 Route::post('/comercio/register', [ComercioAuthController::class, 'register']);
@@ -39,7 +41,6 @@ Route::middleware(ComercioAuth::class)->prefix('comercio')->group(function () {
 Route::post('/track-click', [ApiController::class, 'trackClick']);
 
 // ─── Super Admin (Web Guard) ────────────────────────────────────
-use App\Http\Controllers\AdminController;
 use App\Http\Middleware\AdminAuth;
 
 Route::post('/admin/login', [AdminController::class, 'login']);

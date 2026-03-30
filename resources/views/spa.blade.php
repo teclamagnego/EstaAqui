@@ -1082,6 +1082,12 @@
                 return res.json();
             },
 
+            async fetchSettings() {
+                try {
+                    this.appSettings = await this.apiFetch('/api/settings');
+                } catch (e) { console.error('Error cargando configuración:', e); }
+            },
+
             // ─── Data Fetching ────────────────────────────────
             async fetchCategorias() {
                 try {

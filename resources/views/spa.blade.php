@@ -1556,6 +1556,20 @@
                 } finally {
                     this.authLoading = false;
                 }
+            },
+
+            async installPWA() {
+                if (!this.deferredPrompt) return;
+                
+                // Show prompt
+                this.deferredPrompt.prompt();
+                
+                // Wait for user choice
+                const { outcome } = await this.deferredPrompt.userChoice;
+                console.log(`User response to install: ${outcome}`);
+                
+                // Reset prompt
+                this.deferredPrompt = null;
             }
         };
     }

@@ -1534,6 +1534,28 @@
                         body: JSON.stringify({ orden: parseInt(orden) })
                     });
                 } catch (e) { console.error('Error actualizando orden', e); }
+            },
+
+            async updateAppIcon(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const formData = new FormData();
+                formData.append('icon', file);
+
+                this.authLoading = true;
+                try {
+                    const res = await this.apiFetch('/api/admin/settings/icon', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    this.appSettings.app_icon = res.url;
+                    alert('Icono actualizado con éxito. Los cambios pueden tardar unos minutos en reflejarse en todos los dispositivos.');
+                } catch (e) {
+                    alert('Error actualizando icono: ' + (e.message || 'Error desconocido'));
+                } finally {
+                    this.authLoading = false;
+                }
             }
         };
     }

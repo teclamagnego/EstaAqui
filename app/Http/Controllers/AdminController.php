@@ -181,8 +181,10 @@ class AdminController extends Controller
         if ($request->hasFile('icon')) {
             $file = $request->file('icon');
             $filename = 'app_icon_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->storeAs('public', $filename);
-            $url = url('storage/' . $filename);
+            
+            // USE PUBLIC DISK
+            Storage::disk('public')->putFileAs('', $file, $filename);
+            $url = Storage::disk('public')->url($filename);
             
             Setting::set('app_icon', $url);
             
